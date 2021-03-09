@@ -1,0 +1,123 @@
+{
+	"easycom": {
+		"custom": {
+			"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue",
+			"ShopTitle": "@/components/ShopTitle/ShopTitle.vue"
+		}
+	},
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		}, {
+			"path": "components/ShopTitle/ShopTitle",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/Assortman/Assortman",
+			"style": {
+				"navigationBarTitleText": "商品分类",
+				"enablePullDownRefresh": false,
+				"onReachBottomDistance": 10
+			}
+
+		}, {
+			"path": "pages/CommodityManagement/CommodityManagement",
+			"style": {
+				"navigationBarTitleText": "商品管理",
+				"enablePullDownRefresh": false,
+				"onReachBottomDistance": 10
+
+			}
+
+		}, {
+			"path": "pages/Order/Order",
+			"style": {
+				"navigationBarTitleText": "订单",
+				"enablePullDownRefresh": true
+			}
+
+		}, {
+			"path": "pages/My/My",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/Login/Login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/Login/code/code",
+			"style": {
+				"navigationBarTitleText": "验证码",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/Assortman/CreateEditAssortman",
+			"style": {
+				"navigationBarTitleText": "创建商品分类",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/CommodityManagement/CreateGoods",
+			"style": {
+				"navigationBarTitleText": "创建商品",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/My/ShopDetail",
+			"style": {
+				"navigationBarTitleText": "信息修改",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/My/Feedback",
+			"style": {
+				"navigationBarTitleText": "问题反馈",
+				"enablePullDownRefresh": false
+			}
+
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"list": [{
+				"iconPath": "/static/tab/index.png",
+				"selectedIconPath": "/static/tab/index-active.png",
+				"pagePath": "pages/index/index",
+				"text": "首页"
+			},
+			{
+				"iconPath": "/static/tab/order.png",
+				"selectedIconPath": "/static/tab/order-active.png",
+				"pagePath": "pages/Order/Order",
+				"text": "订单"
+			},
+			{
+				"iconPath": "/static/tab/my.png",
+				"selectedIconPath": "/static/tab/my-active.png",
+				"pagePath": "pages/My/My",
+				"text": "我"
+			}
+		]
+	}
+}
