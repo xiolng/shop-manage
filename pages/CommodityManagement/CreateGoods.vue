@@ -52,13 +52,13 @@ export default {
 			}
 		};
 	},
-	mounted() {
-		this.options && this.options.id && this.getGoodsDetail()
+	onLoad(options) {
+		options.id && this.getGoodsDetail(options.id)
 		this.getProductCategory();
 	},
 	methods: {
-		getGoodsDetail() {
-			this.$u.api.getProductById({ productId: this.options.id }).then(res => {
+		getGoodsDetail(productId) {
+			this.$u.api.getProductById({ productId: productId }).then(res => {
 				const { data, code } = res.data;
 				if (code === '200') {
 					console.log(data);
