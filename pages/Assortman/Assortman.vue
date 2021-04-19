@@ -1,14 +1,22 @@
 <template>
 	<view class="assortman">
 		<u-sticky>
-			<view class="search-box"><u-search placeholder="请输入商品分类名称"></u-search></view>
+			<view class="search-box">
+				<u-search 
+				v-model="page.categoryName"
+				placeholder="请输入商品分类名称"
+				@clear="page.pageNum = 1; getList(true)"
+				@custom="page.pageNum = 1; getList(true)"
+				@search="page.pageNum = 1; getList(true)"
+				></u-search>
+				</view>
 		</u-sticky>
 		<movable-area class="movable-box">
 			<scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom">
 				<view class="list-box">
 					<view class="item-box" v-for="(item, index) in list" :key="index">
 						<u-icon name="tags" size="40"></u-icon>
-						<view class="item-title u-line-1">{{ item.categoryName }}</view>
+						<view class="item-title u-line-2">{{ item.categoryName }}</view>
 						<view class="btn-box">
 							<u-button
 								type="primary"
@@ -46,7 +54,7 @@ export default {
 	data() {
 		return {
 			list: [],
-			x: 10,
+			x: this.$u.sys().windowWidth - 60,
 			y: this.$u.sys().windowHeight - 200,
 			old: {
 				x: 0,
@@ -86,6 +94,7 @@ export default {
 					const { data, code, total } = res.data;
 					if (code === '200') {
 						if (data.length <= 0) {
+							this.list = isAdd ? data : this.list
 							this.$refs.uTips.show({
 								title: '已加载全部',
 								type: 'warning'
@@ -96,11 +105,13 @@ export default {
 						/**
 						 * 测试数据id重复，记得删除
 						 */
-						const datas = data.map(v => {
-							v.productCategoryId = v.productCategoryId + Math.floor(Math.random() * 888);
-							return v;
-						});
-						this.list = isAdd ? datas : this.list.concat(datas);
+						// const datas = data.map(v => {
+						// 	v.productCategoryId = v.productCategoryId + Math.floor(Math.random() * 888);
+						// 	return v;
+						// });
+						console.log('isAdd', isAdd)
+						this.$set(this, 'list', isAdd ? data : this.list.concat(data))
+						console.log('this.list',this.list)
 						this.page.pageNum += 1;
 						this.page.total = total;
 						if (this.list.length < 15) {
@@ -112,6 +123,7 @@ export default {
 		},
 		// 保存商品分类
 		saveForm() {
+			console.log(444, this.form, this.isEdit)
 			if (this.form.categoryName) {
 				this.$u.api[this.isEdit ? 'updateProductCategory' : 'saveProductCategory']({
 					...this.form,
@@ -130,6 +142,7 @@ export default {
 							this.getList(true);
 						}
 						this.isEdit = '';
+						this.form.categoryName = ''
 					} else {
 						this.$refs.uTips.show({
 							title: msg,
@@ -195,6 +208,8 @@ export default {
 			align-items: center;
 			background-color: $u-type-primary;
 			color: #fff;
+			position: relative;
+			z-index: 9999;
 		}
 	}
 	.list-box {

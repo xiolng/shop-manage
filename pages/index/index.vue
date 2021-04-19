@@ -34,9 +34,6 @@
 				:opts="opts"
 				:chartData="chartData"
 				@getIndex="getIndex"
-				@complete="complete"
-				@scrollLeft="scrollLeft"
-				@scrollRight="scrollRight"
 				canvas2
 			/>
 		</view>
@@ -66,11 +63,11 @@ export default {
 			},
 			//模拟的后端返回数据，实际应用自行拼接
 			chartData: {
-				categories: ['2020-12-10', '2020-12-11', '2020-12-12', '2020-12-13', '2020-12-14', '2020-12-15', '2020-12-16', '2020-12-17', '2020-12-18'],
+				categories: [],
 				series: [
 					{
-						name: '日新增用户量',
-						data: [10, 20, 10, 30, 20, 15, 30, 40, 55]
+						name: '销售量',
+						data: []
 					}
 				]
 			},
@@ -105,6 +102,7 @@ export default {
 			this.$u.api.getShop().then(res => {
 				console.log(res);
 				uni.setStorageSync(`shopDetail`, res.data.data);
+				uni.setStorageSync('shopGategory', res.data.data.shopGategory)
 			});
 		},
 		routeComodity() {
@@ -129,36 +127,6 @@ export default {
 			//获取到索引后，可以获取该索引相关一系列数据，其中e.charts.opts中可获取相关
 			console.log(e.charts.opts.categories[e.currentIndex], e.charts.opts.series[0].data[e.currentIndex]);
 		},
-		complete(e) {
-			console.log(e);
-			//移除监听事件，避免其他动作时触发该事件
-			e.charts.delEventListener('renderComplete');
-			//TODO something
-			//下面展示了渲染完成后显示自定义tooltip
-			//{mp:{changedTouches:[{x: 0, y: 80}]}}其中x值无需指定，y值为tooltip显示的上边距的值
-			let cindex = 3; //默认显示的索引位置
-			let textList = [
-				{ text: '默认显示的tooltip', color: null },
-				{ text: '类别1：某个值xxx', color: '#2fc25b' },
-				{ text: '类别2：某个值xxx', color: '#facc14' },
-				{ text: '类别3：某个值xxx', color: '#f04864' }
-			];
-			e.charts.showToolTip(
-				{ mp: { changedTouches: [{ x: 0, y: 80 }] } },
-				{
-					index: cindex,
-					textList: textList
-				}
-			);
-		},
-		//开启滚动条后，滚动条到最左侧触发的事件，用于动态打点
-		scrollLeft(e) {
-			console.log(e);
-		},
-		//开启滚动条后，滚动条到最右侧触发的事件，用于动态打点
-		scrollRight(e) {
-			console.log(e);
-		},
 		getServerData() {
 			this.$u.api
 				.statisticsSalesVolume({
@@ -166,26 +134,29 @@ export default {
 					endTime: this.endTime
 				})
 				.then(res => {
-					console.log(res.data);
+					if(res.data.code === '200'){
+						this.chartData.categories = res.data.data.map(v => v.day)
+						this.chartData.series[0].data = res.data.data.map(v => v.salesVolume)
+					}
 				});
-			const vm = this;
-			uni.request({
-				url: 'https://www.ucharts.cn/data.json',
-				data: {},
-				success: function(res) {
-					let Column = {
-						categories: [],
-						series: []
-					};
-					Column.categories = res.data.data.ColumnB.categories;
-					Column.series = res.data.data.ColumnB.series.splice(0, 1);
+			// const vm = this;
+			// uni.request({
+			// 	url: 'https://www.ucharts.cn/data.json',
+			// 	data: {},
+			// 	success: function(res) {
+			// 		let Column = {
+			// 			categories: [],
+			// 			series: []
+			// 		};
+			// 		Column.categories = res.data.data.ColumnB.categories;
+			// 		Column.series = res.data.data.ColumnB.series.splice(0, 1);
 
-					vm.chartData = Column;
-				},
-				fail: () => {
-					// _self.tips = '网络错误，小程序端请检查合法域名';
-				}
-			});
+			// 		vm.chartData = Column;
+			// 	},
+			// 	fail: () => {
+			// 		// _self.tips = '网络错误，小程序端请检查合法域名';
+			// 	}
+			// });
 		},
 		changeData() {
 			this.getServerData();

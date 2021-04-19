@@ -4,6 +4,8 @@ const install = (Vue, vm) => {
 		 * 登录
 		 *******************************/
 		login: data => vm.$u.post(`/auth/signin`, data),
+		wxCode: params => vm.$u.get(`/system/login/${uni.getAccountInfoSync().miniProgram.appId}/getOpenId/`, params),
+		wxLogin: data => vm.$u.post(`/system/login/signin`, data),
 		/********************************
 		 * 统计管理
 		 ********************************/
@@ -32,13 +34,13 @@ const install = (Vue, vm) => {
 		 // 批量下架
 		 batchNotPut: data => vm.$u.post(`/system/product/batchNotPut`, data),
 		 // 删除商品
-		 deleteProduct: data => vm.$u.post(`/system/product/deleteProduct`, data),
+		 deleteProduct: params => vm.$u.get(`/system/product/deleteProduct`, params),
 		 // 按id查询商品
-		 getProductById: data => vm.$u.post(`/system/product/getProductById`, data),
+		 getProductById: params => vm.$u.get(`/system/product/getProductById`, params),
 		 // 上架
-		 isPut: data => vm.$u.post(`/system/product/isPut`, data),
+		 isPut: params => vm.$u.get(`/system/product/isPut`, params),
 		 // 下架
-		 notPut: data => vm.$u.post(`/system/product/notPut`, data),
+		 notPut: params => vm.$u.get(`/system/product/notPut`, params),
 		 // 分页查询商品
 		 pageProduct: data => vm.$u.post(`/system/product/pageProduct`, data),
 		 // 保存商品
@@ -62,9 +64,11 @@ const install = (Vue, vm) => {
 		 // 获取商铺信息
 		 getShop: params => vm.$u.get(`/system/shop/getShop`, params),
 		 // 保存商铺信息
-		 saveShop: data => vm.$u.get(`/system/shop/saveShop`, data),
+		 saveShop: data => vm.$u.post(`/system/shop/saveShop`, data),
 		 // 更新商铺信息
-		 updateShop: data=> vm.$u.get(`/system/shop/updateShop`, data),
+		 updateShop: data=> vm.$u.post(`/system/shop/updateShop`, data),
+		 // 提交意见反馈
+		 saveSystemIdea: data=> vm.$u.post(`/business/systemIdea/saveSystemIdea`, data),
 	}
 }
 export default {

@@ -57,6 +57,13 @@
 			}
 
 		}, {
+			"path": "pages/wxAuth/wxAuth",
+			"style": {
+				"navigationBarTitleText": "微信授权",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
 			"path": "pages/Login/code/code",
 			"style": {
 				"navigationBarTitleText": "验证码",
@@ -88,6 +95,13 @@
 			"path": "pages/My/Feedback",
 			"style": {
 				"navigationBarTitleText": "问题反馈",
+				"enablePullDownRefresh": false
+			}
+
+		}, {
+			"path": "pages/sharePath/sharePath",
+			"style": {
+				"navigationBarTitleText": "商城",
 				"enablePullDownRefresh": false
 			}
 

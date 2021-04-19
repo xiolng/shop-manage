@@ -1,13 +1,16 @@
 <template>
 	<view class="my-box">
 		<view class="u-flex user-box u-p-l-30 u-p-r-20 u-p-b-30">
-			<view class="u-m-r-10"><u-avatar :src="shopDetail.shopLogo" size="140"></u-avatar></view>
+			<view class="u-m-r-10">
+				<u-avatar v-if="shopDetail.shopLogo" :src="BASE_URL +'/files/'+ shopDetail.shopLogo" size="140"></u-avatar>
+				<u-avatar v-else :src="shopDetail.shopLogo" size="140"></u-avatar>
+				</view>
 			<view class="u-flex-1">
 				<view class="u-font-18 u-p-b-20">{{shopDetail.shopName}}</view>
 				<view class="u-font-14 u-tips-color">{{shopDetail.shopTel}}</view>
 			</view>
-			<view class="u-m-l-10 u-p-10"><u-icon name="scan" color="#969799" size="28"></u-icon></view>
-			<view class="u-m-l-10 u-p-10"><u-icon name="arrow-right" color="#969799" size="28"></u-icon></view>
+			<!-- <view class="u-m-l-10 u-p-10"><u-icon name="scan" color="#969799" size="28"></u-icon></view> -->
+			<!-- <view class="u-m-l-10 u-p-10"><u-icon name="arrow-right" color="#969799" size="28"></u-icon></view> -->
 		</view>
 
 		<view class="u-m-t-20">
@@ -23,21 +26,35 @@
 </template>
 
 <script>
+	import {BASE_URL} from '../../Api/BASE_API.js'
 export default {
 	data() {
 		return {
+			BASE_URL,
 			shopDetail: {
 				businessHour: '',
 				shopAddress: '',
 				shopDetail: '',
 				shopId: '',
-				shopLogo: 'https://uviewui.com/common/logo.png',
-				shopName: '东来顺',
-				shopTel: '18888888888'
+				shopLogo: '',
+				shopName: '',
+				shopTel: ''
 			}
 		};
 	},
-	methods: {}
+	onShow(){
+		this.getShopDetail()
+	},
+	methods: {
+		getShopDetail(){
+			this.$u.api.getShop().then(res => {
+				if(res.data.code === '200'){
+					this.shopDetail = res.data.data
+					uni.setStorageSync('shopGategory', this.shopDetail.shopGategory)
+				}
+			})
+		}
+	}
 };
 </script>
 

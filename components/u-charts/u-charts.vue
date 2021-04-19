@@ -77,6 +77,13 @@ export default {
 		show: {
 			type: Boolean,
 			default: false
+		},
+		offset: {
+			type: Object,
+			default: {
+				x: 0,
+				y: 0
+			}
 		}
 	},
 	data() {
@@ -335,6 +342,7 @@ export default {
 			if (this.inScrollView) {
 				e.type = 'click';
 			}
+			console.log('e',e)
 			if (e.type == 'click') {
 				chartdom = uni
 					.createSelectorQuery()
@@ -360,8 +368,8 @@ export default {
 					})
 					.exec();
 			} else {
-				e.changedTouches.unshift({ x: e.detail.x - e.currentTarget.offsetLeft, y: e.detail.y - e.currentTarget.offsetTop });
-				e.mp.changedTouches.unshift({ x: e.detail.x - e.currentTarget.offsetLeft, y: e.detail.y - e.currentTarget.offsetTop });
+				e.changedTouches.unshift({ x: e.detail.x - e.currentTarget.offsetLeft - this.offset.x, y: e.detail.y - e.currentTarget.offsetTop - this.offset.y });
+				e.mp.changedTouches.unshift({ x: e.detail.x - e.currentTarget.offsetLeft - this.offset.x, y: e.detail.y - e.currentTarget.offsetTop - this.offset.y });
 				canvases[this.canvasId].touchLegend(e);
 				canvases[this.canvasId].showToolTip(e, {
 					format: function(item, category) {

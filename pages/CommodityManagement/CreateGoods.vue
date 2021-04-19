@@ -8,10 +8,17 @@
 				</u-form-item>
 				<u-form-item label="商品分类" prop="productCategoryId">
 					<u-input v-model="form.categoryName" placeholder="请选择商品分类" type="select" @click="show = true"></u-input>
-					<u-select v-model="show" :list="categoryList" value-name="productCategoryId" label-name="categoryName" @confirm="getCategory"></u-select>
+					<u-select
+						v-model="show"
+						:list="categoryList"
+						:default-value="form.productCategoryId"
+						value-name="productCategoryId"
+						label-name="categoryName"
+						@confirm="getCategory"
+					></u-select>
 				</u-form-item>
 				<u-form-item label="是否上架" prop="isPut"><u-switch v-model="form.isPut"></u-switch></u-form-item>
-				<u-form-item label="商品价格" prop="productPrice" required><u-input v-model="form.productPrice" type="number" placeholder="请输入商品价格"></u-input></u-form-item>
+				<u-form-item label="商品价格" prop="productPrice" required><u-number-box v-model="form.productPrice" placeholder="请输入商品价格" :positive-integer="false"></u-number-box></u-form-item>
 				<u-form-item label="商品简介" prop="productIntro"><u-input v-model="form.productIntro" type="textarea" placeholder="请输入商品简介" border></u-input></u-form-item>
 			</u-form>
 		</view>
@@ -35,25 +42,27 @@ export default {
 				productCover: '',
 				productIntro: '',
 				productName: '',
-				productPrice: undefined
+				productPrice: 0
 			},
 			formRules: {
 				categoryName: [{ required: true, message: '请选择商品分类', trigger: ['change'] }],
 				productCategoryId: [{ required: true, message: '请选择商品分类', trigger: ['change'] }],
 				productCover: [{ required: true, message: '请上传商品封面', trigger: ['change'] }],
-				productName: [{ required: true, message: '请输入商品名称', trigger: ['change', 'blur'] }],
-				productPrice: [{ required: true, message: '请输入商品价格', trigger: ['change', 'blur'] }]
+				productName: [{ required: true, message: '请输入商品名称', trigger: ['change', 'blur'] }]
+				// productPrice: [{ required: true, message: '请输入商品价格', trigger: ['change', 'blur'] }]
 			},
 			// 演示地址，请勿直接使用
 			action: BASE_URL + '/api/file/upload',
 			fileList: [],
 			header: {
 				Authorization: uni.getStorageSync('token')
-			}
+			},
+			editId: ''
 		};
 	},
 	onLoad(options) {
-		options.id && this.getGoodsDetail(options.id)
+		options.id && this.getGoodsDetail(options.id);
+		this.editId = options.id;
 		this.getProductCategory();
 	},
 	methods: {
@@ -61,31 +70,48 @@ export default {
 			this.$u.api.getProductById({ productId: productId }).then(res => {
 				const { data, code } = res.data;
 				if (code === '200') {
-					console.log(data);
+					Object.keys(this.form).map(v => {
+						this.$set(this.form, v, data[v]);
+					});
+					this.fileList = [{ url: `${BASE_URL}/files/${data.productCover}` }];
 				}
 			});
 		},
 		// 保存表单
 		saveForm() {
+			const datas = this.form
+			if(this.editId){
+				datas.productId = this.editId
+			}
 			this.$refs.uForm.validate(valid => {
 				if (valid) {
-					this.$u.api
-						.saveProduct({
-							...this.form,
-							isPut: +this.form.isPut
-						})
-						.then(res => {
-							const { data, code } = res.data;
-							if (code === '200') {
-								this.$refs.uTips.show({
-									title: '保存成功',
-									type: 'primary'
+					this.$u.api[this.editId ? 'updateProduct' : 'saveProduct']({
+						...datas,
+						isPut: +this.form.isPut
+					}).then(res => {
+						const { data, code } = res.data;
+						if (code === '200') {
+							this.$refs.uTips.show({
+								title: '保存成功',
+								type: 'primary'
+							});
+							let pages = getCurrentPages(); // 当前页面
+							let beforePage = pages[pages.length - 2]; // 前一个页面
+							console.log('beforePage', beforePage);
+							console.log(pages);
+
+							beforePage.$vm.getGoodsList(true);
+							setTimeout(() => {
+								this.$u.route({
+									type: 'navigateBack',
+									delta: 1,
+									success: function() {
+										beforePage.$vm.getGoodsList(true);
+									}
 								});
-								setTimeout(() => {
-									this.$u.route(`/pages/CommodityManagement/CommodityManagement`);
-								});
-							}
-						});
+							});
+						}
+					});
 				}
 			});
 		},
@@ -127,6 +153,11 @@ export default {
 				const { data, code } = res.data;
 				if (code === '200') {
 					this.categoryList = data;
+					this.categoryList.map(v => {
+						if (v.productCategoryId === this.form.productCategoryId) {
+							this.form.categoryName = v.categoryName;
+						}
+					});
 				}
 			});
 		},

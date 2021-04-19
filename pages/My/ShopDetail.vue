@@ -7,8 +7,9 @@
 			</u-form-item>
 			<u-form-item label="商铺电话"><u-input v-model="form.shopTel" placeholder="请输入商铺电话"></u-input></u-form-item>
 			<u-form-item label="商铺地址"><u-input v-model="form.shopAddress" placeholder="请输入商铺地址"></u-input></u-form-item>
+			<u-form-item label="营业范围"><u-input v-model="form.businessRange" placeholder="请输入营业范围"></u-input></u-form-item>
 			<u-form-item label="商铺营业时间"><u-input v-model="form.businessHour" placeholder="请输入商铺营业时间"></u-input></u-form-item>
-			<u-form-item label="商铺商铺描述"><u-input v-model="form.shopDetail" placeholder="请输入商铺商铺描述"></u-input></u-form-item>
+			<u-form-item label="商铺描述"><u-input v-model="form.shopDetail" placeholder="请输入商铺描述"></u-input></u-form-item>
 		</u-form>
 		<view class="save-btn">
 			<u-button type="primary" @click="saveShopDetail()">提交商铺信息</u-button>
@@ -28,10 +29,10 @@ export default {
 				businessHour: '',
 				shopAddress: '',
 				shopDetail: '',
-				shopId: '',
 				shopLogo: '',
 				shopName: '',
-				shopTel: ''
+				shopTel: '',
+				businessRange: ''
 			},
 			// 演示地址，请勿直接使用
 			action: BASE_URL + '/api/file/upload',
@@ -47,22 +48,32 @@ export default {
 	methods: {
 		getShopDetail() {
 			this.$u.api.getShop().then(res => {
-				Object(this.form).keys().map(v => {
-					this.form[v] = res.data.data[v]
+				const {data, code} = res.data
+				Object.keys(this.form).map(v => {
+					this.form[v] = data[v]
 				})
-				this.fileList = [{url: res.data.data.shopLogo}]
+				if(data.shopId){
+					this.form.shopId = data.shopId || null
+				}
+				
+				this.fileList = data.shopLogo && [{url: `${BASE_URL}/files/${data.shopLogo}`}]
 			});
 		},
 		saveShopDetail() {
-			this.$u.api.saveShop(this.form).then(res => {
+			const vm = this
+			this.$u.api[this.form.shopId ? 'updateShop':'saveShop'](this.form).then(res => {
 				if (res.data.code === '200') {
 					this.$refs.uTips.show({
 						title: '保存成功',
 						type: 'primary'
 					});
+					this.getShopDetail()
 					setTimeout(() => {
-						this.$u.route(`/pages/My/My`);
-					}, 1500);
+						this.$u.route({
+							type: 'navigateBack',
+							delta: 1
+						});
+					});
 				}
 			});
 		},

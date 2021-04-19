@@ -3,13 +3,13 @@
 		<view class="order-item" v-for="item in orderList" :key="item.orderId">
 			<view class="order-content">
 				<view class="content-txt">订单编号：{{ item.orderNo }}</view>
-				<view class="content-txt">订单状态：{{ item.orderStatus }}</view>
-				<view class="content-txt">支付状态：{{ item.payStatus }}</view>
+				<view class="content-txt">订单状态：{{ orderStatus[item.orderStatus] }}</view>
+				<view class="content-txt">支付状态：{{ payStatus[item.payStatus] }}</view>
 				<view class="content-txt">订单日期：{{ item.createTime }}</view>
 			</view>
 			<view class="goods-list">
-				<view class="goods-item" v-for="(goods, index) in item.orderDetails" :key="index">
-					<view class="order-img"><u-image :src="goods.productCover" width="100%" height="100rpx"></u-image></view>
+				<view class="goods-item" v-for="(goods, index) in item.orderDetailListOutDTOList" :key="index">
+					<view class="order-img"><u-image :src="BASE_URL + '/files/' + goods.productCover" width="100%" height="100rpx"></u-image></view>
 					<view class="order-detail">
 						<view class="detail-txt">商品名称：{{ goods.productName }}</view>
 						<view class="detail-txt">商品数量：{{ goods.productNumber }}</view>
@@ -17,133 +17,45 @@
 					</view>
 				</view>
 			</view>
-			<view class="all-price">共{{ item.orderDetails.length }}件，总价格：{{ addPrice(item) }}元</view>
+			<view class="all-price">共{{ item.orderDetailListOutDTOList.length }}件，总价格：{{ addPrice(item) }}元</view>
 			<view class="order-addrenss">
 				<u-icon name="map"></u-icon>
 				<view class="address-txt">{{ item.buyerAddress }}</view>
 			</view>
-			<view class="order-btn"><u-button type="primary" size="mini" @click="pushGoods(item)">发货</u-button></view>
+			<view class="order-btn" v-if="item.orderStatus == 0">
+				<u-button type="primary" size="mini" @click="pushGoods(item)">{{ gategorys[gategoryNum] }}</u-button>
+			</view>
 		</view>
-		
-		
+
 		<u-loadmore :status="status" />
 		<u-top-tips ref="uTips" navbar-height="0" />
 	</view>
 </template>
 
 <script>
+import { BASE_URL } from '../../Api/BASE_API.js';
 export default {
+	props: {
+		orderList: Array
+	},
 	data() {
 		return {
-			orderList: [
-				{
-					buyerAddress: 'a',
-					buyerId: 'a',
-					buyerName: 'a',
-					buyerTel: 'a',
-					createBy: 'a',
-					createTime: 'a',
-					orderDetails: [
-						{
-							createBy: 'a',
-							createTime: 'a',
-							isDel: 0,
-							orderDetailId: 'a',
-							orderId: 'a',
-							orderNo: 'a',
-							productCover: 'a',
-							productId: 'a',
-							productIntro: 'a',
-							productName: 'a',
-							productNumber: 0,
-							productPrice: 10,
-							updateBy: 'a',
-							updateTime: 'a'
-						},
-						{
-							createBy: 'b',
-							createTime: 'b',
-							isDel: 0,
-							orderDetailId: 'b',
-							orderId: 'b',
-							orderNo: 'b',
-							productCover: 'b',
-							productId: 'b',
-							productIntro: 'b',
-							productName: 'b',
-							productNumber: 0,
-							productPrice: 23,
-							updateBy: 'b',
-							updateTime: 'b'
-						}
-					],
-					orderId: 'a',
-					orderNo: 'a',
-					orderPrice: 330,
-					orderStatus: 0,
-					payStatus: 0,
-					updateBy: 'a',
-					updateTime: 'a'
-				},
-				{
-					buyerAddress: 'a',
-					buyerId: 'a',
-					buyerName: 'a',
-					buyerTel: 'a',
-					createBy: 'a',
-					createTime: 'a',
-					orderDetails: [
-						{
-							createBy: 'a',
-							createTime: 'a',
-							isDel: 0,
-							orderDetailId: 'a',
-							orderId: 'a',
-							orderNo: 'a',
-							productCover: 'a',
-							productId: 'a',
-							productIntro: 'a',
-							productName: 'a',
-							productNumber: 0,
-							productPrice: 20,
-							updateBy: 'a',
-							updateTime: 'a'
-						},
-						{
-							createBy: 'b',
-							createTime: 'b',
-							isDel: 0,
-							orderDetailId: 'b',
-							orderId: 'b',
-							orderNo: 'b',
-							productCover: 'b',
-							productId: 'b',
-							productIntro: 'b',
-							productName: 'b',
-							productNumber: 0,
-							productPrice: 43,
-							updateBy: 'b',
-							updateTime: 'b'
-						}
-					],
-					orderId: 'b',
-					orderNo: 'a',
-					orderPrice: 43,
-					orderStatus: 0,
-					payStatus: 0,
-					updateBy: 'a',
-					updateTime: 'a'
-				}
-			],
+			BASE_URL,
 			page: {
 				pageNum: 1,
 				pageSize: 10,
 				total: 0
 			},
-			status: ''
+			status: '',
+			orderStatus: ['已发货', '未发货', '已取消', '', '', '', '', '', '完成', '完成'],
+			payStatus: ['已支付', '未支付', '已取消'],
+			gategorys: ['送货', '送外卖', '送餐', '发货'],
+			gategoryNum: 0
 		};
 	},
-	mounted() {},
+	mounted() {
+		this.gategoryNum = uni.getStorageSync('shopGategory');
+	},
 	methods: {
 		pushGoods(item) {
 			this.$u.api
@@ -167,7 +79,7 @@ export default {
 		// 总价格
 		addPrice(item) {
 			let allPrice = 0;
-			item.orderDetails.map(v => {
+			item.orderDetailListOutDTOList.map(v => {
 				allPrice += +v.productPrice;
 			});
 			return allPrice;

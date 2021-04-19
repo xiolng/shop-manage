@@ -8,12 +8,14 @@
 						<movable-view class="search-btn" :x="x" :y="y" direction="all" @change="onChange" inertia @click="showSearch = true">
 							<u-icon name="search" size="40rpx"></u-icon>
 						</movable-view>
-						<scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom"><OrderList ref="OrderList" v-if="current === 0" /></scroll-view>
+						<scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom">
+							<OrderList ref="OrderList" v-if="current === 0" :order-list="orderList" />
+						</scroll-view>
 					</movable-area>
 				</swiper-item>
-				<swiper-item class="swiper-item" :key="1"><scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom">
-				<OrdersReceived v-if="current === 1"></OrdersReceived>
-				</scroll-view></swiper-item>
+				<swiper-item class="swiper-item" :key="1">
+					<scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom"><OrdersReceived v-if="current === 1"></OrdersReceived></scroll-view>
+				</swiper-item>
 			</swiper>
 		</view>
 		<!-- search -->
@@ -26,16 +28,10 @@
 					<u-form-item label="买家电话:"><u-input placeholder="请输入买家电话" v-model="searchData.buyerTel"></u-input></u-form-item>
 					<u-form-item label="订单状态:">
 						<u-radio-group v-model="searchData.orderStatus">
-									<u-radio name="0">
-										已发货
-									</u-radio>
-									<u-radio name="1">
-										未发货
-									</u-radio>
-									<u-radio name="2">
-										已取消
-									</u-radio>
-								</u-radio-group>
+							<u-radio name="0">已发货</u-radio>
+							<u-radio name="1">未发货</u-radio>
+							<u-radio name="2">已取消</u-radio>
+						</u-radio-group>
 					</u-form-item>
 				</u-form>
 				<u-button type="primary" @click="searchPage">搜索</u-button>
@@ -83,7 +79,8 @@ export default {
 			],
 			// 因为内部的滑动机制限制，请将tabs组件和swiper组件的current用不同变量赋值
 			current: 0, // tabs组件的current值，表示当前活动的tab选项
-			swiperCurrent: 0 // swiper组件的current值，表示当前那个swiper-item是活动的
+			swiperCurrent: 0, // swiper组件的current值，表示当前那个swiper-item是活动的
+			orderList: []
 		};
 	},
 	mounted() {
@@ -110,13 +107,15 @@ export default {
 							});
 							return false;
 						}
-						this.orderList = this.orderList.concat(data);
-						this.page.pageNum = total;
+						this.orderList = this.page.pageNum == 1 ? data : this.orderList.concat(data);
+						this.page.total = total;
+						this.page.pageNum += 1;
 					}
 				});
 		},
 		searchPage() {
 			this.showSearch = false;
+			this.page.pageNum = 1;
 			this.getOrder();
 		},
 		onChange: function(e) {
@@ -146,8 +145,8 @@ export default {
 		}
 	},
 	onPullDownRefresh() {
-		this.getOrder()
-		uni.stopPullDownRefresh()
+		this.getOrder();
+		uni.stopPullDownRefresh();
 	}
 };
 </script>
@@ -164,8 +163,8 @@ export default {
 			/* #ifdef MP-WEIXIN */
 			height: calc(100vh - 68px);
 			/* #endif */
-			
-			.movable-box{
+
+			.movable-box {
 				width: 100%;
 				height: 100%;
 			}
