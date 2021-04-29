@@ -57,19 +57,23 @@
 		</scroll-view>
 		<u-popup v-model="showShare" mode="bottom">
 			<view class="share-box">
-				<u-button type="primary" open-type="share">分享好友</u-button>
+				<u-button type="default" open-type="share">
+					<u-icon name="chat" size="100" color="#00aa00" />
+					<view>分享好友</view>
+				</u-button>
 				<u-button
-					type="primary"
+					type="default"
 					@click="
 						showShare = false;
 						showShareBanner = true;
 					"
 				>
-					生成海报
+					<u-icon name="photo" size="100" color="#ff5500" />
+					<view>生成海报</view>
 				</u-button>
 			</view>
 		</u-popup>
-		<ShareGoods v-if="showShareBanner" @cancel="() => (showShare = false)" :goods-detail="goodsDetail"></ShareGoods>
+		<ShareGoods v-if="showShareBanner" @cancel="() => {showShare = false; showShareBanner = false}" :goods-detail="goodsDetail"></ShareGoods>
 		<u-top-tips ref="uTips" />
 	</view>
 </template>
@@ -271,10 +275,20 @@ export default {
 	}
 	.share-box {
 		display: flex;
-		flex-direction: column;
+		flex-direction: row;
+		justify-content: space-around;
 		padding: 40rpx 40rpx 0;
 		.u-btn {
+			width: 100%;
+			height: auto;
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
 			margin-bottom: 40rpx;
+			border-width: 0;
+			&::after {
+				border: none;
+			}
 		}
 	}
 }

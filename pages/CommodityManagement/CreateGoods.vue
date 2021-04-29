@@ -19,6 +19,7 @@
 				</u-form-item>
 				<u-form-item label="是否上架" prop="isPut"><u-switch v-model="form.isPut"></u-switch></u-form-item>
 				<u-form-item label="商品价格" prop="productPrice" required><u-number-box v-model="form.productPrice" placeholder="请输入商品价格" :positive-integer="false"></u-number-box></u-form-item>
+				<u-form-item label="商品原价" prop="originalPrice" required><u-number-box v-model="form.originalPrice" placeholder="请输入商品原价" :positive-integer="false"></u-number-box></u-form-item>
 				<u-form-item label="商品简介" prop="productIntro"><u-input v-model="form.productIntro" type="textarea" placeholder="请输入商品简介" border></u-input></u-form-item>
 			</u-form>
 		</view>
@@ -42,7 +43,8 @@ export default {
 				productCover: '',
 				productIntro: '',
 				productName: '',
-				productPrice: 0
+				productPrice: 0,
+				originalPrice: 0
 			},
 			formRules: {
 				categoryName: [{ required: true, message: '请选择商品分类', trigger: ['change'] }],

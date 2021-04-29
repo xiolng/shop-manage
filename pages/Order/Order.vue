@@ -3,7 +3,7 @@
 		<view><u-tabs-swiper ref="uTabs" :list="list" :current="current" @change="tabsChange" :is-scroll="false" swiperWidth="750" bar-width="140"></u-tabs-swiper></view>
 		<view class="swiper-box">
 			<swiper :current="swiperCurrent" @transition="transition" @animationfinish="animationfinish" class="swiper-content">
-				<swiper-item class="swiper-item" :key="0">
+				<swiper-item class="swiper-item" :key="0" @touchmove.stop="() => true">
 					<movable-area class="movable-box">
 						<movable-view class="search-btn" :x="x" :y="y" direction="all" @change="onChange" inertia @click="showSearch = true">
 							<u-icon name="search" size="40rpx"></u-icon>
@@ -13,7 +13,7 @@
 						</scroll-view>
 					</movable-area>
 				</swiper-item>
-				<swiper-item class="swiper-item" :key="1">
+				<swiper-item class="swiper-item" :key="1" @touchmove.stop="() => true">
 					<scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom"><OrdersReceived v-if="current === 1"></OrdersReceived></scroll-view>
 				</swiper-item>
 			</swiper>
@@ -63,11 +63,11 @@ export default {
 				pageSize: 10,
 				total: 0
 			},
-			x: this.$u.sys().windowWidth,
+			x: this.$u.sys().windowWidth - 90,
 			y: this.$u.sys().windowHeight - 200,
 			old: {
-				x: 0,
-				y: 0
+				x: this.$u.sys().windowWidth - 90,
+				y: this.$u.sys().windowHeight - 200
 			},
 			list: [
 				{

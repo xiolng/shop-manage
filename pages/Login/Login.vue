@@ -9,12 +9,12 @@
 				<u-button slot="right" type="error" size="mini" @click="getCode">{{ codeTips }}</u-button>
 			</u-form-item>
 		</u-form>
-		<u-button type="primary" :disabled="!form.phone" @click="submit">提交</u-button>
+		<u-button type="primary" :disabled="!form.phone" @click="submit">登录</u-button>
 		<!-- <view class="change-login">
 			<text @click="ispwd = !ispwd">{{ ispwd ? '验证码登录' : '密码登录' }}</text>
 		</view> -->
 		<u-verification-code seconds="60" ref="uCode" @change="codeChange"></u-verification-code>
-		<u-top-tips ref='uTips'></u-top-tips>
+		<u-top-tips ref="uTips"></u-top-tips>
 	</view>
 </template>
 
@@ -63,25 +63,62 @@ export default {
 	},
 	methods: {
 		submit() {
-			this.$refs.uForm.validate(valid => {
+			const vm = this;
+			const userInfo = uni.getStorageSync('userInfo') || null;
+			if (userInfo) {
+				vm.login(vm);
+				return false;
+			}
+			uni.getUserProfile({
+				desc: `获取用户昵称、头像`,
+				success(result) {
+					console.log(result);
+					uni.setStorageSync('userInfo', result.userInfo);
+				},
+				fail(err) {
+					console.log('err', err);
+					uni.setStorageSync('userInfo', true);
+				},
+				complete() {
+					console.log('userInfo', uni.getStorageSync('userInfo'));
+					vm.login(vm);
+				}
+			});
+		},
+		login(vm) {
+			vm.$refs.uForm.validate(valid => {
+				const userInfo = uni.getStorageSync('userInfo');
+				delete userInfo.gender;
+				delete userInfo.language;
 				if (valid) {
-					this.$u.api.wxLogin(this.form).then(res => {
-						console.log('res', res)
-						if(res.data.code && res.data.code !== '200'){
-							this.$refs.uTips.show({
-								type: 'error',
-								title: res.data.msg
-							})
-							return false
-						}
-						uni.setStorageSync('tenantCode', this.form.tenantCode)
-						uni.setStorageSync(`token`, `${res.data.tokenType} ${res.data.accessToken}`);
-						this.$refs.uForm.resetFields();
-						this.$u.route({
-							type: 'reLaunch',
-							url: '/pages/index/index'
+					vm.$u.api
+						.wxLogin({
+							...vm.form,
+							loginType: +!vm.ispwd,
+							...userInfo,
+							openId: uni.getStorageSync('openId')
+						})
+						.then(res => {
+							const { code } = res.data;
+							if (!code || code === '200') {
+								uni.setStorageSync(`token`, `${res.data.tokenType} ${res.data.accessToken}`);
+								uni.setStorageSync('userInfo', res.data.data);
+								vm.$u.api.getShop().then(resd => {
+									const { data, code } = resd.data;
+									if (code === '200') {
+										uni.setStorageSync('userInfo', data);
+										vm.setUserInfoAction(data);
+									}
+								});
+								vm.$refs.uForm.resetFields();
+								vm.$u.route({
+									type: 'navigateBack',
+									delta: 1
+								});
+							} else {
+								this.$u.toast(res.data.msg);
+							}
 						});
-					});
 				}
 			});
 		},
@@ -90,23 +127,31 @@ export default {
 		},
 		// 获取验证码
 		getCode() {
+			if (!this.$u.test.mobile(this.form.phone)) {
+				this.$u.toast(`请输入正确的手机号码`);
+				return false;
+			}
 			if (this.$refs.uCode.canGetCode) {
 				// 模拟向后端请求验证码
 				uni.showLoading({
 					title: '正在获取验证码',
 					mask: true
 				});
-				setTimeout(() => {
-					uni.hideLoading();
-					// 这里此提示会被this.start()方法中的提示覆盖
-					this.$u.toast('验证码已发送');
-					// 通知验证码组件内部开始倒计时
-					this.$refs.uCode.start();
-				}, 2000);
+				this.$u.api
+					.getValidateCode({
+						phone: this.form.phone
+					})
+					.then(res => {
+						// 这里此提示会被this.start()方法中的提示覆盖
+						this.$u.toast('验证码已发送');
+						// 通知验证码组件内部开始倒计时
+						this.$refs.uCode.start();
+						uni.hideLoading();
+					});
 			} else {
 				this.$u.toast('倒计时结束后再发送');
 			}
-		},
+		}
 	},
 	onReady() {
 		this.$refs.uForm.setRules(this.rules);

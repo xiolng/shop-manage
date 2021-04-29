@@ -4,8 +4,9 @@ const install = (Vue, vm) => {
 		 * 登录
 		 *******************************/
 		login: data => vm.$u.post(`/auth/signin`, data),
-		wxCode: params => vm.$u.get(`/system/login/${uni.getAccountInfoSync().miniProgram.appId}/getOpenId/`, params),
+		wxCode: params => vm.$u.get(`/system/login/getOpenId`, params),
 		wxLogin: data => vm.$u.post(`/system/login/signin`, data),
+		getValidateCode: params => vm.$u.get(`/system/login/getValidateCode`, params),
 		/********************************
 		 * 统计管理
 		 ********************************/

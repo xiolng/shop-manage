@@ -22,7 +22,7 @@
 				<u-icon name="map"></u-icon>
 				<view class="address-txt">{{ item.buyerAddress }}</view>
 			</view>
-			<view class="order-btn" v-if="item.orderStatus == 0">
+			<view class="order-btn" v-if="item.orderStatus >= 1 || item.orderStatus <= 7">
 				<u-button type="primary" size="mini" @click="pushGoods(item)">{{ gategorys[gategoryNum] }}</u-button>
 			</view>
 		</view>
@@ -47,7 +47,7 @@ export default {
 				total: 0
 			},
 			status: '',
-			orderStatus: ['已发货', '未发货', '已取消', '', '', '', '', '', '完成', '完成'],
+			orderStatus: ['初始', '待发货', '发货', '', '', '', '', '', '取消', '完成'],
 			payStatus: ['已支付', '未支付', '已取消'],
 			gategorys: ['送货', '送外卖', '送餐', '发货'],
 			gategoryNum: 0
@@ -79,7 +79,7 @@ export default {
 		// 总价格
 		addPrice(item) {
 			let allPrice = 0;
-			item.orderDetailListOutDTOList.map(v => {
+			item.orderDetailListOutDTOList && item.orderDetailListOutDTOList.map(v => {
 				allPrice += +v.productPrice;
 			});
 			return allPrice;

@@ -62,8 +62,9 @@ export default {
 					posterCanvasId: _this.canvasId, //canvasId
 					delayTimeScale: 20, //延时系数
 					background: {
-						height: 10,
-						width: 10
+						height: 1000,
+						width: 1000,
+						backgroundColor:"#fff"
 					},
 					setCanvasWH({ bgObj }) {
 						_this.poster = bgObj;
@@ -162,32 +163,32 @@ export default {
 									};
 								}
 							},
-							{
-								type: 'text',
-								text: _this.goodsDetail.productIntro,
-								serialNum: 4,
-								allInfoCallback({ drawArray }) {
-									const productImage = drawArray.find(item => item.id === 'productImage');
-									const text1 = drawArray.find(item => item.id === 'text1');
-									console.log(text1.textLength, 1111111111111111111111111);
-									const addHeight = getBgObj().height - productImage.dHeight;
-									return {
-										size: getBgObj().width * 0.05,
-										lineFeed: {
-											maxWidth: getBgObj().width * 0.5,
-											lineNum: 1
-										},
-										dx: getBgObj().width * 0.05 + text1.textLength,
-										dy: productImage.dHeight + addHeight * 0.75
-									};
-								}
-							},
+							// {
+							// 	type: 'text',
+							// 	text: _this.goodsDetail.productIntro,
+							// 	serialNum: 4,
+							// 	allInfoCallback({ drawArray }) {
+							// 		const productImage = drawArray.find(item => item.id === 'productImage');
+							// 		const text1 = drawArray.find(item => item.id === 'text1');
+							// 		console.log(text1.textLength, 1111111111111111111111111);
+							// 		const addHeight = getBgObj().height - productImage.dHeight;
+							// 		return {
+							// 			size: getBgObj().width * 0.05,
+							// 			lineFeed: {
+							// 				maxWidth: getBgObj().width * 0.5,
+							// 				lineNum: 1
+							// 			},
+							// 			dx: getBgObj().width * 0.05 + text1.textLength,
+							// 			dy: productImage.dHeight + addHeight * 0.75
+							// 		};
+							// 	}
+							// },
 							{
 								type: 'image',
 								id: 'productImage',
 								url: BASE_URL + '/files/' + _this.goodsDetail.shareImageUrl,
-								dx: 370,
-								dy: 520,
+								dx: 350,
+								dy: 480,
 								serialNum: 6,
 								infoCallBack(imageInfo) {
 									return {

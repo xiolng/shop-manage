@@ -1,44 +1,47 @@
 <template>
 	<view class="orders-received">
-		<view class="qiun-columns">
-			<uCharts
-				v-if="chartData.series.length"
-				class="qiun-charts"
-				type="pie"
-				canvasId="receivedCanvas"
-				:chartData="chartData"
-				@getIndex="getIndex"
-				:echartsH5="true"
-				:echartsApp="true"
-				:canvas2d="true"
-				:offset="{ x: 30, y: 80 }"
-			/>
-			<u-empty v-else />
-		</view>
-		<u-collapse>
-			<u-collapse-item ref="searchRef">
-				<view slot="title">
-					<u-icon name="search" color="#ff5500" class=""></u-icon>
-					<text style="margin-left: 20rpx;">点击此处进行搜索/筛选查询</text>
-				</view>
-				<u-form label-width="160">
-					<u-form-item label="商品名称"><input placeholder="请输入商品名称" v-model="searchData.productName" /></u-form-item>
-					<u-form-item label="销量"><input placeholder="请输入销量" v-model="searchData.salesVolume" /></u-form-item>
-					<u-form-item label="开始时间">
-						<picker mode="date" :value="searchData.startTime" @change="e => (searchData.startTime = e.target.value)" style="margin-right: 10rpx;">
-							{{ searchData.startTime }}
-						</picker>
-					</u-form-item>
-					<u-form-item label="结束时间">
-						<picker mode="date" :value="searchData.endTime" @change="e => (searchData.endTime = e.target.value)" style="margin-right: 10rpx;">{{ searchData.endTime }}</picker>
-					</u-form-item>
-				</u-form>
+		<u-dropdown ref="uDropdown">
+			<u-dropdown-item title="点击此处进行搜索/筛选查询">
+				<view class="search-box">
+					<view slot="title">
+						<u-icon name="search" color="#ff5500" class=""></u-icon>
+						<text style="margin-left: 20rpx;">点击此处进行搜索/筛选查询</text>
+					</view>
+					<u-form label-width="160">
+						<u-form-item label="商品名称"><input placeholder="请输入商品名称" v-model="searchData.productName" /></u-form-item>
+						<u-form-item label="销量"><input placeholder="请输入销量" v-model="searchData.salesVolume" /></u-form-item>
+						<u-form-item label="开始时间">
+							<picker mode="date" :value="searchData.startTime" @change="e => (searchData.startTime = e.target.value)" style="margin-right: 10rpx;">
+								{{ searchData.startTime }}
+							</picker>
+						</u-form-item>
+						<u-form-item label="结束时间">
+							<picker mode="date" :value="searchData.endTime" @change="e => (searchData.endTime = e.target.value)" style="margin-right: 10rpx;">{{ searchData.endTime }}</picker>
+						</u-form-item>
+					</u-form>
 
-				<u-button type="primary" @click="getStatist()">搜索</u-button>
-			</u-collapse-item>
-		</u-collapse>
+					<u-button type="primary" @click="getStatist">搜索</u-button>
+				</view>
+			</u-dropdown-item>
+		</u-dropdown>
 
 		<!-- 图表-日期选择-结束 -->
+		<view class="qiun-columns">
+			<view class="qiun-charts">
+				<uCharts
+					v-if="chartData.series.length"
+					type="pie"
+					canvasId="receivedCanvas"
+					:chartData="chartData"
+					@getIndex="getIndex"
+					:echartsH5="true"
+					:echartsApp="true"
+					:canvas2d="true"
+					:offset="{ x: 30, y: 80 }"
+				/>
+				<u-empty v-else />
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -66,7 +69,7 @@ export default {
 					itemCount: 4,
 					scrollShow: true,
 					scrollAlign: 'left'
-				}
+				},
 			},
 			//模拟的后端返回数据，实际应用自行拼接
 			chartData: {
@@ -121,9 +124,10 @@ export default {
 					this.chartData.series = data.map(v => {
 						return {
 							data: v.salesVolume || 1,
-							name: v.productName
+							name: v.productName + '（个/元）'
 						};
 					});
+					this.$refs.uDropdown.close();
 				}
 			});
 
@@ -171,6 +175,10 @@ export default {
 	margin: 20rpx;
 	padding: 20rpx;
 	box-sizing: border-box;
+	.search-box {
+		padding: 20rpx;
+		background: #fff;
+	}
 	.down-box {
 		min-height: 300rpx;
 		padding: 40rpx;
@@ -183,13 +191,15 @@ export default {
 	}
 	// 图表
 	.qiun-columns {
-		width: 100%;
-		height: 500rpx;
-		display: flex;
-		position: relative;
-		overflow: hidden;
+		width: calc(100% - 40rpx);
+		position: fixed;
+		top: 48rpx;
+		left: 20rpx;
+		right: 0;
 		z-index: 1;
-		justify-content: center;
+		box-sizing: border-box;
+		text-align: center;
+		padding-top: 80rpx;
 		.qiun-charts {
 			width: 100%;
 			height: 500rpx;

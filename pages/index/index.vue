@@ -34,7 +34,7 @@
 				:opts="opts"
 				:chartData="chartData"
 				@getIndex="getIndex"
-				canvas2
+				:canvas2="true"
 			/>
 		</view>
 	</view>
@@ -66,7 +66,7 @@ export default {
 				categories: [],
 				series: [
 					{
-						name: '销售量',
+						name: '销售量(日/元)',
 						data: []
 					}
 				]
