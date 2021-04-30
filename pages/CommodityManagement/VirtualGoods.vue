@@ -18,15 +18,8 @@
 					></u-select>
 				</u-form-item>
 				<u-form-item label="是否上架" prop="isPut"><u-switch v-model="form.isPut"></u-switch></u-form-item>
-				<u-form-item label="商品价格" prop="productPrice" required>
-					<u-number-box v-model="form.productPrice" placeholder="请输入商品价格" :positive-integer="false" :min="1"></u-number-box>
-				</u-form-item>
-				<u-form-item label="商品原价" prop="originalPrice" required>
-					<u-number-box v-model="form.originalPrice" placeholder="请输入商品原价" :positive-integer="false" :min="1"></u-number-box>
-				</u-form-item>
-				<u-form-item label="商品库存" prop="stock" required>
-					<u-number-box v-model="form.stock" :positive-integer="false" placeholder="请输入商品库存"></u-number-box>
-					</u-form-item>
+				<u-form-item label="商品价格" prop="productPrice" required><u-number-box v-model="form.productPrice" placeholder="请输入商品价格" :positive-integer="false"></u-number-box></u-form-item>
+				<u-form-item label="商品原价" prop="originalPrice" required><u-number-box v-model="form.originalPrice" placeholder="请输入商品原价" :positive-integer="false"></u-number-box></u-form-item>
 				<u-form-item label="商品简介" prop="productIntro"><u-input v-model="form.productIntro" type="textarea" placeholder="请输入商品简介" border></u-input></u-form-item>
 			</u-form>
 		</view>
@@ -50,9 +43,8 @@ export default {
 				productCover: '',
 				productIntro: '',
 				productName: '',
-				productPrice: 1,
-				originalPrice: 1,
-				stock: 1
+				productPrice: 0,
+				originalPrice: 0
 			},
 			formRules: {
 				categoryName: [{ required: true, message: '请选择商品分类', trigger: ['change'] }],
@@ -67,16 +59,12 @@ export default {
 			header: {
 				Authorization: uni.getStorageSync('token')
 			},
-			editId: '',
-			// 商品类型
-			goodsType: 0
+			editId: ''
 		};
 	},
 	onLoad(options) {
-		console.log('options',options)
 		options.id && this.getGoodsDetail(options.id);
 		this.editId = options.id;
-		this.goodsType = options.type && options.type === '1' ? 1 : 0;
 		this.getProductCategory();
 	},
 	methods: {
@@ -93,14 +81,13 @@ export default {
 		},
 		// 保存表单
 		saveForm() {
-			const datas = this.form;
-			if (this.editId) {
-				datas.productId = this.editId;
+			const datas = this.form
+			if(this.editId){
+				datas.productId = this.editId
 			}
 			this.$refs.uForm.validate(valid => {
 				if (valid) {
 					this.$u.api[this.editId ? 'updateProduct' : 'saveProduct']({
-						productType: this.goodsType,
 						...datas,
 						isPut: +this.form.isPut
 					}).then(res => {

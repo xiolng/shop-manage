@@ -48,7 +48,7 @@ export default {
 			},
 			status: '',
 			orderStatus: ['初始', '待发货', '发货', '', '', '', '', '', '取消', '完成'],
-			payStatus: ['已支付', '未支付', '已取消'],
+			payStatus: ['初始', '已支付'],
 			gategorys: ['送货', '送外卖', '送餐', '发货'],
 			gategoryNum: 0
 		};
@@ -64,8 +64,9 @@ export default {
 				})
 				.then(res => {
 					if (res.data.code === '200') {
+						console.log(this.gategoryNum, 'eeee', this.gategorys);
 						this.$refs.uTips.show({
-							title: '发货成功',
+							title: this.gategorys[this.gategoryNum] + '成功',
 							type: 'primary'
 						});
 					} else {
@@ -79,9 +80,10 @@ export default {
 		// 总价格
 		addPrice(item) {
 			let allPrice = 0;
-			item.orderDetailListOutDTOList && item.orderDetailListOutDTOList.map(v => {
-				allPrice += +v.productPrice;
-			});
+			item.orderDetailListOutDTOList &&
+				item.orderDetailListOutDTOList.map(v => {
+					allPrice += +v.productPrice;
+				});
 			return allPrice;
 		}
 	}

@@ -81,6 +81,7 @@ export default {
 		//#endif
 	},
 	onLoad() {
+		this.getShopDetail()
 		this.show = true;
 		//#ifdef MP-ALIPAY
 		uni.getSystemInfo({

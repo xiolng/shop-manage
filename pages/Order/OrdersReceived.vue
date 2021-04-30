@@ -124,7 +124,7 @@ export default {
 					this.chartData.series = data.map(v => {
 						return {
 							data: v.salesVolume || 1,
-							name: v.productName + '（个/元）'
+							name: v.productName + '（个）'
 						};
 					});
 					this.$refs.uDropdown.close();

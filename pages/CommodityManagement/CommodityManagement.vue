@@ -12,7 +12,7 @@
 						@custom="(page.pageNum = 1), getGoodsList(true)"
 					></u-search>
 				</view>
-				<view class="add-box"><u-button type="primary" @click="$u.route(`/pages/CommodityManagement/CreateGoods`)">新增商品</u-button></view>
+				<view class="add-box"><u-button type="primary" @click="addCommodity">新增商品</u-button></view>
 			</view>
 		</u-sticky>
 		<!-- 商品列表 -->
@@ -29,7 +29,10 @@
 								lazy-load
 							></u-image>
 						</view>
-						<view class="goods-title u-line-2">{{ item.productName }}</view>
+						<view class="goods-title">
+							<view class="u-line-2">{{ item.productName }}</view>
+							<view class="goods-stock">库存：{{item.stock}}</view>
+						</view>
 						<view v-if="!item.openBtn" class="more-btn" @click="changeBtn(item, index)">操作</view>
 						<view class="goods-btn" :class="item.openBtn ? '' : 'btn-close'">
 							<u-button size="mini" :type="item.isPut ? 'success' : 'info'" @click="Putaway(item, index)">{{ item.isPut ? '已上架' : '已下架' }}</u-button>
@@ -73,8 +76,18 @@
 				</u-button>
 			</view>
 		</u-popup>
-		<ShareGoods v-if="showShareBanner" @cancel="() => {showShare = false; showShareBanner = false}" :goods-detail="goodsDetail"></ShareGoods>
+		<ShareGoods
+			v-if="showShareBanner"
+			@cancel="
+				() => {
+					showShare = false;
+					showShareBanner = false;
+				}
+			"
+			:goods-detail="goodsDetail"
+		></ShareGoods>
 		<u-top-tips ref="uTips" />
+		<u-action-sheet :list="actionList" v-model="showChangeCommodity" @click="actionClick" />
 	</view>
 </template>
 
@@ -97,7 +110,10 @@ export default {
 			},
 			showShare: false,
 			showShareBanner: false,
-			goodsDetail: {}
+			goodsDetail: {},
+			// 饭店选择实体商品或虚拟商品创建
+			showChangeCommodity: false,
+			actionList: [{ text: '实体商品', subText: '店内实体商品' }, { text: '虚拟商品', subText: '如：核销码等' }]
 		};
 	},
 	created() {
@@ -126,6 +142,18 @@ export default {
 		};
 	},
 	methods: {
+		actionClick(index) {
+			console.log('index', index)
+			this.$u.route(`/pages/CommodityManagement/CreateGoods?type=${index}`);
+		},
+		addCommodity() {
+			const type = uni.getStorageSync('shopGategory');
+			if (type === 2) {
+				this.showChangeCommodity = true;
+			} else {
+				this.$u.route(`/pages/CommodityManagement/CreateGoods`);
+			}
+		},
 		// 获取商品列表
 		getGoodsList(isAdd) {
 			this.page.pageNum = isAdd ? 1 : this.page.pageNum;
@@ -245,9 +273,15 @@ export default {
 					flex-shrink: 0;
 				}
 				.goods-title {
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
 					flex-grow: 1;
 					margin: 0 10rpx;
-					line-height: 50rpx;
+					line-height: 30rpx;
+					.goods-stock{
+						margin-top: 6rpx;
+					}
 				}
 				.more-btn {
 					display: flex;
