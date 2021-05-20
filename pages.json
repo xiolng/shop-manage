@@ -106,7 +106,16 @@
 			}
 
 		}
-	],
+	    ,{
+            "path" : "pages/Order/CreateLogistics",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "物流信息",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",

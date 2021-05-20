@@ -31,7 +31,7 @@
 						</view>
 						<view class="goods-title">
 							<view class="u-line-2">{{ item.productName }}</view>
-							<view class="goods-stock">库存：{{item.stock}}</view>
+							<view class="goods-stock">库存：{{ item.stock }}</view>
 						</view>
 						<view v-if="!item.openBtn" class="more-btn" @click="changeBtn(item, index)">操作</view>
 						<view class="goods-btn" :class="item.openBtn ? '' : 'btn-close'">
@@ -43,7 +43,8 @@
 									$u.route({
 										url: '/pages/CommodityManagement/CreateGoods',
 										params: {
-											id: item.productId
+											id: item.productId,
+											type: item.productType
 										}
 									})
 								"
@@ -104,7 +105,7 @@ export default {
 			list: [],
 			page: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				total: 0,
 				productName: ''
 			},
@@ -113,7 +114,7 @@ export default {
 			goodsDetail: {},
 			// 饭店选择实体商品或虚拟商品创建
 			showChangeCommodity: false,
-			actionList: [{ text: '实体商品', subText: '店内实体商品' }, { text: '虚拟商品', subText: '如：核销码等' }]
+			actionList: [{ text: '实体商品', subText: '店内实体商品' }, { text: '券码商品', subText: '如：核销码等' }]
 		};
 	},
 	created() {
@@ -143,7 +144,7 @@ export default {
 	},
 	methods: {
 		actionClick(index) {
-			console.log('index', index)
+			console.log('index', index);
 			this.$u.route(`/pages/CommodityManagement/CreateGoods?type=${index}`);
 		},
 		addCommodity() {
@@ -174,9 +175,6 @@ export default {
 				this.page.total = total;
 				this.list = this.page.pageNum === 1 ? data : this.list.concat(data);
 				this.page.pageNum += 1;
-				if (this.list.length <= 10) {
-					this.getGoodsList();
-				}
 			});
 		},
 		getShare(item) {
@@ -279,7 +277,7 @@ export default {
 					flex-grow: 1;
 					margin: 0 10rpx;
 					line-height: 30rpx;
-					.goods-stock{
+					.goods-stock {
 						margin-top: 6rpx;
 					}
 				}

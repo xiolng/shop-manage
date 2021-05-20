@@ -107,14 +107,13 @@ export default {
 									const { data, code } = resd.data;
 									if (code === '200') {
 										uni.setStorageSync('userInfo', data);
-										vm.setUserInfoAction(data);
+										// vm.setUserInfoAction(data);
 									}
 								});
 								vm.$refs.uForm.resetFields();
-								vm.$u.route({
-									type: 'navigateBack',
-									delta: 1
-								});
+								uni.reLaunch({
+									url: `/pages/index/index`
+								})
 							} else {
 								this.$u.toast(res.data.msg);
 							}

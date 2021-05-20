@@ -3,13 +3,13 @@
 		<u-dropdown ref="uDropdown">
 			<u-dropdown-item title="点击此处进行搜索/筛选查询">
 				<view class="search-box">
-					<view slot="title">
+					<!-- <view slot="title">
 						<u-icon name="search" color="#ff5500" class=""></u-icon>
 						<text style="margin-left: 20rpx;">点击此处进行搜索/筛选查询</text>
-					</view>
+					</view> -->
 					<u-form label-width="160">
-						<u-form-item label="商品名称"><input placeholder="请输入商品名称" v-model="searchData.productName" /></u-form-item>
-						<u-form-item label="销量"><input placeholder="请输入销量" v-model="searchData.salesVolume" /></u-form-item>
+						<!-- <u-form-item label="商品名称"><input placeholder="请输入商品名称" v-model="searchData.productName" /></u-form-item>
+						<u-form-item label="销量"><input placeholder="请输入销量" v-model="searchData.salesVolume" /></u-form-item> -->
 						<u-form-item label="开始时间">
 							<picker mode="date" :value="searchData.startTime" @change="e => (searchData.startTime = e.target.value)" style="margin-right: 10rpx;">
 								{{ searchData.startTime }}
@@ -37,7 +37,7 @@
 					:echartsH5="true"
 					:echartsApp="true"
 					:canvas2d="true"
-					:offset="{ x: 30, y: 80 }"
+					:inScrollView="true"
 				/>
 				<u-empty v-else />
 			</view>
@@ -203,6 +203,7 @@ export default {
 		.qiun-charts {
 			width: 100%;
 			height: 500rpx;
+			position: relative;
 		}
 	}
 }

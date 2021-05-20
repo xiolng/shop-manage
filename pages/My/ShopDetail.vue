@@ -3,7 +3,9 @@
 		<u-form :form="form" label-width="180">
 			<u-form-item label="商铺名称"><u-input v-model="form.shopName" placeholder="请输入商铺名称"></u-input></u-form-item>
 			<u-form-item label="商铺LOGO">
-				<u-upload :action="action" :file-list="fileList" max-count="1" :multiple="false" @on-error="changeImgErr" @on-success="changeImgSuccess" :header="header"></u-upload>
+				<!-- <u-upload :action="action" :file-list="fileList" max-count="1" :multiple="false" @on-error="changeImgErr" @on-success="changeImgSuccess" :header="header"></u-upload> -->
+				
+					<u-avatar :src="`${BASE_URL}/files/${form.shopLogo}`" size="140" @click="uploadImage" mode="square"></u-avatar>
 			</u-form-item>
 			<u-form-item label="商铺电话"><u-input v-model="form.shopTel" placeholder="请输入商铺电话"></u-input></u-form-item>
 			<u-form-item label="商铺地址"><u-input v-model="form.shopAddress" placeholder="请输入商铺地址"></u-input></u-form-item>
@@ -73,6 +75,33 @@ export default {
 							type: 'navigateBack',
 							delta: 1
 						});
+					});
+				}
+			});
+		},
+		uploadImage() {
+			const vm = this
+			uni.chooseImage({
+				count: 1,
+				success(res) {
+					uni.downloadFile({
+						url: res.tempFilePaths[0],
+						success: imgData => {
+							uni.uploadFile({
+								name: 'file',
+								url: BASE_URL + '/api/file/upload',
+								header: {
+									Authorization: uni.getStorageSync('token')
+								},
+								filePath: imgData.tempFilePath,
+								success(result) {
+									const { data, code, msg } = JSON.parse(result.data);
+									if (code === '200') {
+										vm.form.shopLogo = data;
+									}
+								}
+							});
+						}
 					});
 				}
 			});

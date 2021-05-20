@@ -28,9 +28,9 @@
 					<u-form-item label="买家电话:"><u-input placeholder="请输入买家电话" v-model="searchData.buyerTel"></u-input></u-form-item>
 					<u-form-item label="订单状态:">
 						<u-radio-group v-model="searchData.orderStatus">
-							<u-radio name="0">已发货</u-radio>
-							<u-radio name="1">未发货</u-radio>
-							<u-radio name="2">已取消</u-radio>
+							<u-radio :name="3">已发货</u-radio>
+							<u-radio :name="2">未发货</u-radio>
+							<u-radio :name="8">已取消</u-radio>
 						</u-radio-group>
 					</u-form-item>
 				</u-form>
@@ -56,7 +56,7 @@ export default {
 				buyerAddress: '',
 				buyerName: '',
 				buyerTel: '',
-				orderStatus: 0
+				orderStatus: undefined
 			},
 			page: {
 				pageNum: 1,
@@ -83,11 +83,15 @@ export default {
 			orderList: []
 		};
 	},
-	mounted() {
+	onShow() {
 		this.getOrder();
+	},
+	onHide(){
+		this.page.pageNum = 1
 	},
 	methods: {
 		getOrder() {
+			const vm = this
 			this.$u.api
 				.pageOrder({
 					...this.searchData,
@@ -97,19 +101,22 @@ export default {
 					this.searchData.buyerAddress = '';
 					this.searchData.buyerName = '';
 					this.searchData.buyerTel = '';
-					this.searchData.orderStatus = 0;
+					this.searchData.orderStatus = undefined
 					const { data, code, total } = res.data;
 					if (code === '200') {
+						if(vm.page.pageNum == 1){
+							vm.orderList = []
+						}
 						if (data.length <= 0) {
-							this.$refs.uTips.show({
+							vm.$refs.uTips.show({
 								title: '已加载全部',
 								type: 'warning'
 							});
 							return false;
 						}
-						this.orderList = this.page.pageNum == 1 ? data : this.orderList.concat(data);
-						this.page.total = total;
-						this.page.pageNum += 1;
+						vm.orderList = vm.page.pageNum == 1 ? data : vm.orderList.concat(data);
+						vm.page.total = total;
+						vm.page.pageNum += 1;
 					}
 				});
 		},

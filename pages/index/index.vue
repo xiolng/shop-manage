@@ -4,11 +4,15 @@
 		<view class="tag-box">
 			<view class="tag-item" @click="routeAssortman">
 				<image class="item-icon" src="../../static/shop/assortman.svg"></image>
-				<text>商品分类管理</text>
+				<text>分类管理</text>
 			</view>
 			<view class="tag-item" @click="routeComodity">
 				<image class="item-icon" src="../../static/shop/commodityManagement.svg"></image>
 				<text>商品管理</text>
+			</view>
+			<view class="tag-item" @click="scanChange">
+				<image class="item-icon" src="../../static/shop/writeOff.svg"></image>
+				<text>核销券码--上线按类型隐藏</text>
 			</view>
 		</view>
 		<!-- 管理-按钮-结束 -->
@@ -27,16 +31,28 @@
 		<!-- 图表-日期选择-结束 -->
 
 		<view class="qiun-columns">
-			<uCharts
-				class="qiun-charts"
-				type="column"
-				canvasId="renshu2"
-				:opts="opts"
-				:chartData="chartData"
-				@getIndex="getIndex"
-				:canvas2="true"
-			/>
+			<view class="qiun-charts">
+				<uCharts
+					v-if="chartData.categories.length"
+					type="column"
+					canvasId="renshu2"
+					:chartData="chartData"
+					@getIndex="getIndex"
+					:echartsH5="true"
+					:echartsApp="true"
+					:canvas2d="true"
+					:inScrollView="true"
+				/>
+				<u-empty v-else />
+			</view>
 		</view>
+		<u-toast ref="uTips" />
+		<u-modal v-model="showTips">
+			<view class="tips-box">
+				<u-icon :name="tipIcon[tipNum]" :size="100" :color="tipColor[tipNum]"></u-icon>
+				<view class="tips-name">{{ tipList[tipNum] }}</view>
+			</view>
+		</u-modal>
 	</view>
 </template>
 
@@ -48,19 +64,14 @@ export default {
 	},
 	data() {
 		return {
+			showTips: false,
+			tipNum: 0,
+			tipIcon: ['checkbox-mark', 'info-circle-fill', 'question-circle-fill'],
+			tipList: ['核销成功', '核销失败', '核销失败,请检查核销码'],
+			tipColor: [],
 			arr: [],
 			title: '333',
 			showCalendar: false,
-			scrollTop: 0,
-			//覆盖默认配置，开启滚动条
-			opts: {
-				// enableScroll: true,
-				xAxis: {
-					itemCount: 4,
-					scrollShow: true,
-					scrollAlign: 'left'
-				}
-			},
 			//模拟的后端返回数据，实际应用自行拼接
 			chartData: {
 				categories: [],
@@ -81,7 +92,9 @@ export default {
 		//#endif
 	},
 	onLoad() {
-		this.getShopDetail()
+		console.log('color', this.$u.color);
+		this.tipColor = [this.$u.color.primary, this.$u.color.error, this.$u.color.warning];
+		this.getShopDetail();
 		this.show = true;
 		//#ifdef MP-ALIPAY
 		uni.getSystemInfo({
@@ -99,11 +112,51 @@ export default {
 		this.getServerData();
 	},
 	methods: {
+		scanChange() {
+			const vm = this;
+			uni.scanCode({
+				onlyFromCamera: true,
+				scanType: 'qrCode',
+				success: res => {
+					console.log('res', res.result);
+					if (!res.result.includes('orderCardNo') && !res.result.includes('orderDetailId')) {
+						vm.tipList[1] = '请选择核正确销码';
+						vm.tipNum = 1;
+						vm.showTips = true;
+						return false;
+					}
+					const datas = res.result.split('&');
+					const orderCardNo = datas[0].split('=')[1];
+					const orderDetailId = datas[1].split('=')[1];
+					vm.$u.api
+						.writeOff({
+							orderCardNo,
+							orderDetailId
+						})
+						.then(result => {
+							const { data, code, msg } = result.data;
+							console.log('qrcode', data, code, msg);
+							if (code === '200') {
+								vm.tipNum = 0;
+								vm.showTips = true;
+							} else {
+								vm.tipList[1] = msg;
+								vm.tipNum = 1;
+								vm.showTips = true;
+							}
+						});
+				},
+				fail(err) {
+					vm.tipNum = 2;
+					vm.showTips = true;
+				}
+			});
+		},
 		getShopDetail() {
 			this.$u.api.getShop().then(res => {
 				console.log(res);
 				uni.setStorageSync(`shopDetail`, res.data.data);
-				uni.setStorageSync('shopGategory', res.data.data.shopGategory)
+				uni.setStorageSync('shopGategory', res.data.data.shopGategory);
 			});
 		},
 		routeComodity() {
@@ -135,9 +188,9 @@ export default {
 					endTime: this.endTime
 				})
 				.then(res => {
-					if(res.data.code === '200'){
-						this.chartData.categories = res.data.data.map(v => v.day)
-						this.chartData.series[0].data = res.data.data.map(v => v.salesVolume)
+					if (res.data.code === '200') {
+						this.chartData.categories = res.data.data.map(v => v.day);
+						this.chartData.series[0].data = res.data.data.map(v => v.salesVolume.toFixed(2));
 					}
 				});
 			// const vm = this;
@@ -175,17 +228,17 @@ export default {
 	// 管理按钮
 	.tag-box {
 		width: 100%;
-		padding: 20rpx;
+		padding: 10rpx 20rpx;
 		.tag-item {
 			width: 100%;
-			padding: 40rpx;
-			margin-bottom: 40rpx;
+			padding: 20rpx;
+			margin-bottom: 20rpx;
 			border: 1px solid #007aff;
-			border-radius: 30rpx;
+			border-radius: 14rpx;
 			text-align: center;
 			.item-icon {
-				width: 100rpx;
-				height: 100rpx;
+				width: 80rpx;
+				height: 80rpx;
 				display: block;
 				margin: 0 auto 10rpx;
 				img {
@@ -215,7 +268,7 @@ export default {
 				font-size: 24rpx;
 				margin-right: 20rpx;
 				line-height: 48rpx;
-				picker{
+				picker {
 					color: $u-type-primary;
 				}
 			}
@@ -228,14 +281,23 @@ export default {
 			}
 		}
 	}
+	.tips-box {
+		height: 300rpx;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		.tips-name {
+			font-size: 40rpx;
+			margin-top: 40rpx;
+		}
+	}
 
 	// 图表
 	.qiun-columns {
 		width: 100%;
-		display: flex;
 		.qiun-charts {
 			width: 100%;
-			display: flex;
 			height: 600rpx;
 		}
 	}

@@ -1,43 +1,47 @@
 <template>
 	<view class="assortman">
 		<u-sticky>
-			<view class="search-box">
-				<u-search 
-				v-model="page.categoryName"
-				placeholder="请输入商品分类名称"
-				@clear="page.pageNum = 1; getList(true)"
-				@custom="page.pageNum = 1; getList(true)"
-				@search="page.pageNum = 1; getList(true)"
-				></u-search>
-				</view>
+			<view class="position-box">
+				<view class="search-box">
+					<u-search 
+					v-model="page.categoryName"
+					placeholder="请输入商品分类名称"
+					@clear="page.pageNum = 1; getList(true)"
+					@custom="page.pageNum = 1; getList(true)"
+					@search="page.pageNum = 1; getList(true)"
+					></u-search>
+					</view>
+					<view class="add-box"><u-button type="primary" @click="showModal = true; isEdit = ''">新增分类</u-button></view>
+			</view>
 		</u-sticky>
-		<movable-area class="movable-box">
-			<scroll-view scroll-y style="height: 100%;width: 100%;" @scrolltolower="onreachBottom">
-				<view class="list-box">
-					<view class="item-box" v-for="(item, index) in list" :key="index">
-						<u-icon name="tags" size="40"></u-icon>
-						<view class="item-title u-line-2">{{ item.categoryName }}</view>
-						<view class="btn-box">
-							<u-button
-								type="primary"
-								size="mini"
-								@click="
-									isEdit = item.productCategoryId;
-									showModal = true;
-									form.categoryName = item.categoryName;
-									categoryIndex = index;
-								"
-							>
-								编辑
-							</u-button>
-							<u-button type="error" size="mini" @click="deleteCategory(item, index)">删除</u-button>
-						</view>
+		<scroll-view scroll-y style="height: 80vh;width: 100%;" @scrolltolower="onreachBottom">
+			<view class="list-box">
+				<view class="item-box" v-for="(item, index) in list" :key="index">
+					<u-icon name="tags" size="40"></u-icon>
+					<view class="item-title u-line-2">{{ item.categoryName }}</view>
+					<view class="btn-box">
+						<u-button
+							type="primary"
+							size="mini"
+							@click="
+								isEdit = item.productCategoryId;
+								showModal = true;
+								form.categoryName = item.categoryName;
+								categoryIndex = index;
+							"
+						>
+							编辑
+						</u-button>
+						<u-button type="error" size="mini" @click="deleteCategory(item, index)">删除</u-button>
 					</view>
 				</view>
-				<u-loadmore status="nomore" />
-			</scroll-view>
+			</view>
+			<u-loadmore status="nomore" />
+		</scroll-view>
+		<!-- <movable-area class="movable-box">
+			
 			<movable-view class="add-btn" :x="x" :y="y" direction="all" @change="btnChange" @click="showModal = true; isEdit = ''"><u-icon name="plus"></u-icon></movable-view>
-		</movable-area>
+		</movable-area> -->
 
 		<u-modal v-model="showModal" :title="isEdit ? '编辑分类' : '新建分类'" @confirm="saveForm" @cancel="form.categoryName = ''" ref="modalRef" async-close mask-close-able show-cancel-button>
 			<view class="slot-content">
@@ -45,7 +49,7 @@
 			</view>
 		</u-modal>
 		<!-- 提示弹窗 -->
-		<u-top-tips ref="uTips" navbar-height="70" />
+		<u-top-tips ref="uTips" />
 	</view>
 </template>
 
@@ -62,7 +66,7 @@ export default {
 			},
 			page: {
 				pageNum: 1,
-				pageSize: 10,
+				pageSize: 20,
 				total: 0,
 				categoryName: ''
 			},
@@ -114,9 +118,6 @@ export default {
 						console.log('this.list',this.list)
 						this.page.pageNum += 1;
 						this.page.total = total;
-						if (this.list.length < 15) {
-							this.getList();
-						}
 						this.$forceUpdate();
 					}
 				});
@@ -188,13 +189,16 @@ export default {
 <style lang="scss">
 .assortman {
 	height: 100vh;
-	.search-box {
+	// 顶部浮动
+	.position-box {
+		padding: 20rpx;
 		background-color: #fff;
-		padding: 30rpx;
-		border-bottom: 1px solid $u-border-color;
-		box-shadow: 0rpx 7rpx 11rpx 0rpx rgba($u-border-color, 0.4);
-		position: relative;
-		z-index: 999;
+		.search-box {
+			margin-bottom: 20rpx;
+		}
+		.add-box {
+			margin-bottom: 20rpx;
+		}
 	}
 	.movable-box {
 		width: 100%;

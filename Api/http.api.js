@@ -55,10 +55,19 @@ const install = (Vue, vm) => {
 		 pageOrder: data => vm.$u.post(`/system/order/pageOrder`, data),
 		 // 订单详情
 		 getOrderById: params => vm.$u.get(`/system/order/getOrderById`, params),
+		 // 订单取消
+		 cancelOrder: params => vm.$u.get(`/system/order/cancelOrder`, params),
 		 // 订单统计
 		 statisticsProduct: data => vm.$u.post(`/system/order/statisticsProduct`, data),
 		 // 订单发货
-		 sendProduct: params => vm.$u.get(`/system/order/sendProduct`, params),
+		 sendProduct: data => vm.$u.post(`/system/order/sendProduct`, data),
+		 // 获取订单信息
+		 getOrderLogistics: params => vm.$u.get(`/system/order/getOrderLogistics`, params),
+		 // 更新订单信息
+		 updateOrderLogistics: data => vm.$u.post(`/system/order/updateOrderLogistics`, data),
+		 // 核销
+		 writeOff: data => vm.$u.post(`/system/order/writeOff`, data),
+		 
 		/*************************************************
 		 * 商铺管理
 		 *************************************************/

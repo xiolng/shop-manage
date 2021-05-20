@@ -1,6 +1,6 @@
 <template>
 	<view class="order-list-page">
-		<view class="order-item" v-for="item in orderList" :key="item.orderId">
+		<view class="order-item" v-for="item in orderList" :key="item.orderId" @click="getOrder(item)">
 			<view class="order-content">
 				<view class="content-txt">订单编号：{{ item.orderNo }}</view>
 				<view class="content-txt">订单状态：{{ orderStatus[item.orderStatus] }}</view>
@@ -22,8 +22,14 @@
 				<u-icon name="map"></u-icon>
 				<view class="address-txt">{{ item.buyerAddress }}</view>
 			</view>
-			<view class="order-btn" v-if="item.orderStatus >= 1 || item.orderStatus <= 7">
-				<u-button type="primary" size="mini" @click="pushGoods(item)">{{ gategorys[gategoryNum] }}</u-button>
+			<view class="btn-group">
+				<view class="order-btn" v-if="item.orderStatus >= 2 && item.orderStatus <= 7 && (item.orderStatus !== 3 && item.payStatus >= 4) && gategoryNum !== 3">
+					<u-button type="primary" size="mini" @click="changeEnter(item)">{{ gategorys[gategoryNum] }}</u-button>
+				</view>
+				<view class="order-btn" v-if="item.orderStatus >= 2 && item.orderStatus <= 7 && gategoryNum === 3">
+					<u-button type="primary" size="mini" @click="changeEnter(item)">更新物流</u-button>
+				</view>
+				<view class="order-btn" v-if="item.orderStatus !== '8' && item.orderStatus !== 8"><u-button type="error" size="mini" @click="cancelOrder(item)">取消订单</u-button></view>
 			</view>
 		</view>
 
@@ -47,16 +53,34 @@ export default {
 				total: 0
 			},
 			status: '',
-			orderStatus: ['初始', '待发货', '发货', '', '', '', '', '', '取消', '完成'],
-			payStatus: ['初始', '已支付'],
+			orderStatus: ['订单已提交', '订单已提交', '待发货', '已发货', '', '', '', '', '取消', '完成'],
+			payStatus: ['待支付', '待支付', '', '', '支付成功', '支付失败'],
 			gategorys: ['送货', '送外卖', '送餐', '发货'],
-			gategoryNum: 0
+			gategoryNum: 0,
+			logisticsData: {},
+			activeItem: {}
 		};
 	},
 	mounted() {
 		this.gategoryNum = uni.getStorageSync('shopGategory');
 	},
 	methods: {
+		getOrder(item){
+			this.$u.api.getOrderById({
+				orderId: item.orderId
+			})
+		},
+		// 判断是否是电商需要填写物流信息
+		changeEnter(item) {
+			this.activeItem = item;
+			if (this.gategoryNum === 3) {
+				uni.navigateTo({
+					url: `/pages/Order/CreateLogistics?orderId=${item.orderId}`
+				});
+			} else {
+				this.pushGoods(item);
+			}
+		},
 		pushGoods(item) {
 			this.$u.api
 				.sendProduct({
@@ -76,6 +100,21 @@ export default {
 						});
 					}
 				});
+		},
+		cancelOrder(item){
+			this.$u.api.cancelOrder({
+				orderId: item.orderId
+			}).then(res => {
+				const {data, code} = res.data
+				if(code == '200'){
+					this.$refs.uTips.show({
+						type: 'primary',
+						title: '取消成功'
+					})
+					item.orderStatus = 8
+					this.$forceUpdate()
+				}
+			})
 		},
 		// 总价格
 		addPrice(item) {
@@ -141,9 +180,16 @@ export default {
 				margin-left: 20rpx;
 			}
 		}
-
+	}
+	.form-box {
+		padding: 40rpx;
+	}
+	.btn-group {
+		display: flex;
+		justify-content: flex-end;
 		.order-btn {
 			text-align: right;
+			margin-left: 20rpx;
 		}
 	}
 }
