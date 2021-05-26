@@ -4,15 +4,15 @@
 		<view class="tag-box">
 			<view class="tag-item" @click="routeAssortman">
 				<image class="item-icon" src="../../static/shop/assortman.svg"></image>
-				<text>分类管理</text>
+				<text class="item-name">商品分类管理</text>
 			</view>
 			<view class="tag-item" @click="routeComodity">
 				<image class="item-icon" src="../../static/shop/commodityManagement.svg"></image>
-				<text>商品管理</text>
+				<text class="item-name">商品管理</text>
 			</view>
 			<view class="tag-item" @click="scanChange">
 				<image class="item-icon" src="../../static/shop/writeOff.svg"></image>
-				<text>核销券码--上线按类型隐藏</text>
+				<text class="item-name">核销券码--上线按类型隐藏</text>
 			</view>
 		</view>
 		<!-- 管理-按钮-结束 -->
@@ -20,12 +20,12 @@
 		<view class="chart-date">
 			<view class="chart-flex">
 				<view class="flex-input u-flex">
-					开始日期：
+					<u-icon name="calendar" size="30"></u-icon>
 					<picker mode="date" :value="startTime" @change="e => (startTime = e.target.value)" style="margin-right: 10rpx;">{{ startTime }}</picker>
-					结束日期：
+					<view class="date-line"> - </view> 
 					<picker mode="date" :value="endTime" @change="e => (endTime = e.target.value)">{{ endTime }}</picker>
 				</view>
-				<view class="flex-btn"><u-button type="primary" size="medium" @click="getServerData">确定</u-button></view>
+				<view class="flex-btn"><u-button type="primary" shape="circle" size="medium" @click="getServerData">确定</u-button></view>
 			</view>
 		</view>
 		<!-- 图表-日期选择-结束 -->
@@ -147,8 +147,11 @@ export default {
 						});
 				},
 				fail(err) {
-					vm.tipNum = 2;
-					vm.showTips = true;
+					console.log('err', err)
+					if(err.errMsg && err.errMsg == 'scanCode:fail'){
+						vm.tipNum = 2;
+						vm.showTips = true;
+					}
 				}
 			});
 		},
@@ -228,22 +231,30 @@ export default {
 	// 管理按钮
 	.tag-box {
 		width: 100%;
-		padding: 10rpx 20rpx;
+		padding: 60rpx 20rpx;
+		display: flex;
+		flex-wrap: wrap;
 		.tag-item {
-			width: 100%;
+			width: calc(50% - 20rpx);
 			padding: 20rpx;
-			margin-bottom: 20rpx;
+			margin: 10rpx;
 			border: 1px solid #007aff;
-			border-radius: 14rpx;
+			border-radius: 24rpx;
 			text-align: center;
+			display: flex;
+			justify-content: center;
+			box-sizing: border-box;
 			.item-icon {
-				width: 80rpx;
-				height: 80rpx;
-				display: block;
-				margin: 0 auto 10rpx;
+				width: 40rpx;
+				height: 40rpx;
+				margin-right: 10rpx;
+				flex-shrink: 0;
 				img {
-					width: 100%;
+					width: 30%;
 				}
+			}
+			.item-name{
+				font-size: 30rpx;
 			}
 		}
 	}
@@ -263,13 +274,20 @@ export default {
 			.flex-input {
 				width: 100%;
 				border: 1px solid $u-border-color;
-				border-radius: 10rpx;
-				padding: 10rpx;
+				background: $u-border-color;
+				border-radius: 48rpx;
+				padding: 10rpx 20rpx;
 				font-size: 24rpx;
 				margin-right: 20rpx;
 				line-height: 48rpx;
-				picker {
-					color: $u-type-primary;
+				// picker {
+				// 	color: $u-type-primary;
+				// }
+				.u-icon{
+					margin-right: 10rpx;
+				}
+				.date-line{
+					margin: 0 10rpx;
 				}
 			}
 			.flex-btn {

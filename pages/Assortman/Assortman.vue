@@ -3,26 +3,38 @@
 		<u-sticky>
 			<view class="position-box">
 				<view class="search-box">
-					<u-search 
-					v-model="page.categoryName"
-					placeholder="请输入商品分类名称"
-					@clear="page.pageNum = 1; getList(true)"
-					@custom="page.pageNum = 1; getList(true)"
-					@search="page.pageNum = 1; getList(true)"
+					<u-search
+						v-model="page.categoryName"
+						placeholder="请输入商品分类名称"
+						@clear="
+							page.pageNum = 1;
+							getList(true);
+						"
+						@custom="
+							page.pageNum = 1;
+							getList(true);
+						"
+						@search="
+							page.pageNum = 1;
+							getList(true);
+						"
+						:action-style="{ width: '100rpx', background: $u.color.primary, color: '#fff', borderRadius: '30rpx', padding: '10rpx 20rpx', overflow: 'hidden', flexShrink: 0 }"
 					></u-search>
-					</view>
-					<view class="add-box"><u-button type="primary" @click="showModal = true; isEdit = ''">新增分类</u-button></view>
+				</view>
 			</view>
 		</u-sticky>
-		<scroll-view scroll-y style="height: 80vh;width: 100%;" @scrolltolower="onreachBottom">
+		<scroll-view scroll-y style="height: 90vh;width: 100%; position: relative; overflow: hidden; overflow-y: auto;" @scrolltolower="onreachBottom">
 			<view class="list-box">
 				<view class="item-box" v-for="(item, index) in list" :key="index">
-					<u-icon name="tags" size="40"></u-icon>
-					<view class="item-title u-line-2">{{ item.categoryName }}</view>
+					<view class="item-title u-line-2">
+						<u-icon :name="tags" size="26"></u-icon>
+						<text class="u-line-1">{{ item.categoryName }}</text>
+					</view>
 					<view class="btn-box">
 						<u-button
 							type="primary"
 							size="mini"
+							shape="circle"
 							@click="
 								isEdit = item.productCategoryId;
 								showModal = true;
@@ -32,18 +44,39 @@
 						>
 							编辑
 						</u-button>
-						<u-button type="error" size="mini" @click="deleteCategory(item, index)">删除</u-button>
+						<u-button type="error" shape="circle" size="mini" @click="deleteCategory(item, index)">删除</u-button>
 					</view>
 				</view>
 			</view>
 			<u-loadmore status="nomore" />
 		</scroll-view>
+		<view class="add-box">
+			<u-button
+				type="primary"
+				shape="circle"
+				@click="
+					showModal = true;
+					isEdit = '';
+				"
+			>
+				新增分类
+			</u-button>
+		</view>
 		<!-- <movable-area class="movable-box">
 			
 			<movable-view class="add-btn" :x="x" :y="y" direction="all" @change="btnChange" @click="showModal = true; isEdit = ''"><u-icon name="plus"></u-icon></movable-view>
 		</movable-area> -->
 
-		<u-modal v-model="showModal" :title="isEdit ? '编辑分类' : '新建分类'" @confirm="saveForm" @cancel="form.categoryName = ''" ref="modalRef" async-close mask-close-able show-cancel-button>
+		<u-modal
+			v-model="showModal"
+			:title="isEdit ? '编辑分类' : '新建分类'"
+			@confirm="saveForm"
+			@cancel="form.categoryName = ''"
+			ref="modalRef"
+			async-close
+			mask-close-able
+			show-cancel-button
+		>
 			<view class="slot-content">
 				<u-field v-model="form.categoryName" :error-message="errMsg" placeholder="请输入商品分类名称" label="商品分类名称" label-width="200" required border></u-field>
 			</view>
@@ -54,9 +87,11 @@
 </template>
 
 <script>
+import tags from './image/tag.svg';
 export default {
 	data() {
 		return {
+			tags,
 			list: [],
 			x: this.$u.sys().windowWidth - 60,
 			y: this.$u.sys().windowHeight - 200,
@@ -98,7 +133,7 @@ export default {
 					const { data, code, total } = res.data;
 					if (code === '200') {
 						if (data.length <= 0) {
-							this.list = isAdd ? data : this.list
+							this.list = isAdd ? data : this.list;
 							this.$refs.uTips.show({
 								title: '已加载全部',
 								type: 'warning'
@@ -113,9 +148,9 @@ export default {
 						// 	v.productCategoryId = v.productCategoryId + Math.floor(Math.random() * 888);
 						// 	return v;
 						// });
-						console.log('isAdd', isAdd)
-						this.$set(this, 'list', isAdd ? data : this.list.concat(data))
-						console.log('this.list',this.list)
+						console.log('isAdd', isAdd);
+						this.$set(this, 'list', isAdd ? data : this.list.concat(data));
+						console.log('this.list', this.list);
 						this.page.pageNum += 1;
 						this.page.total = total;
 						this.$forceUpdate();
@@ -124,7 +159,7 @@ export default {
 		},
 		// 保存商品分类
 		saveForm() {
-			console.log(444, this.form, this.isEdit)
+			console.log(444, this.form, this.isEdit);
 			if (this.form.categoryName) {
 				this.$u.api[this.isEdit ? 'updateProductCategory' : 'saveProductCategory']({
 					...this.form,
@@ -143,7 +178,7 @@ export default {
 							this.getList(true);
 						}
 						this.isEdit = '';
-						this.form.categoryName = ''
+						this.form.categoryName = '';
 					} else {
 						this.$refs.uTips.show({
 							title: msg,
@@ -189,14 +224,18 @@ export default {
 <style lang="scss">
 .assortman {
 	height: 100vh;
+	background: #f3f4f6;
+	.add-box {
+		position: absolute;
+		left: 40rpx;
+		right: 40rpx;
+		bottom: 200rpx;
+	}
 	// 顶部浮动
 	.position-box {
 		padding: 20rpx;
 		background-color: #fff;
 		.search-box {
-			margin-bottom: 20rpx;
-		}
-		.add-box {
 			margin-bottom: 20rpx;
 		}
 	}
@@ -217,21 +256,24 @@ export default {
 		}
 	}
 	.list-box {
-		padding: 20rpx 40rpx;
+		padding: 20rpx;
 		.item-box {
-			display: flex;
-			padding: 20px 0;
-			border-bottom: 1px solid $u-border-color;
+			background: #fff;
+			padding: 10px;
+			margin-bottom: 20rpx;
+			border-radius: 10rpx;
 			.item-title {
-				flex-grow: 1;
+				display: flex;
 				font-size: 32rpx;
-				padding-left: 20rpx;
+				.u-icon {
+					margin-right: 10rpx;
+				}
 			}
 			.btn-box {
-				width: 210rpx;
-				flex-shrink: 0;
-				justify-self: flex-end;
+				display: flex;
+				justify-content: flex-end;
 				.u-btn {
+					height: 40rpx;
 					margin-left: 20rpx;
 				}
 			}

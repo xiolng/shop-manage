@@ -1,28 +1,25 @@
 <template>
 	<view class="shop-detail">
 		<u-form :form="form" label-width="180">
-			<u-form-item label="商铺名称"><u-input v-model="form.shopName" placeholder="请输入商铺名称"></u-input></u-form-item>
-			<u-form-item label="商铺LOGO">
+			<u-form-item label="商铺名称"><u-input v-model="form.shopName" placeholder="请输入商铺名称" input-align="right"></u-input></u-form-item>
+			<u-form-item label="商铺LOGO" label-position="top">
 				<!-- <u-upload :action="action" :file-list="fileList" max-count="1" :multiple="false" @on-error="changeImgErr" @on-success="changeImgSuccess" :header="header"></u-upload> -->
-				
-					<u-avatar :src="`${BASE_URL}/files/${form.shopLogo}`" size="140" @click="uploadImage" mode="square"></u-avatar>
+				<view class="logo-box"><u-image :src="`${BASE_URL}/files/${form.shopLogo}`" width="160" height="160" @click="uploadImage"></u-image></view>
 			</u-form-item>
-			<u-form-item label="商铺电话"><u-input v-model="form.shopTel" placeholder="请输入商铺电话"></u-input></u-form-item>
-			<u-form-item label="商铺地址"><u-input v-model="form.shopAddress" placeholder="请输入商铺地址"></u-input></u-form-item>
-			<u-form-item label="营业范围"><u-input v-model="form.businessRange" placeholder="请输入营业范围"></u-input></u-form-item>
-			<u-form-item label="商铺营业时间"><u-input v-model="form.businessHour" placeholder="请输入商铺营业时间"></u-input></u-form-item>
-			<u-form-item label="商铺描述"><u-input v-model="form.shopDetail" placeholder="请输入商铺描述"></u-input></u-form-item>
+			<u-form-item label="商铺电话"><u-input v-model="form.shopTel" placeholder="请输入商铺电话" input-align="right"></u-input></u-form-item>
+			<u-form-item label="商铺地址"><u-input v-model="form.shopAddress" placeholder="请输入商铺地址" input-align="right"></u-input></u-form-item>
+			<u-form-item label="营业范围"><u-input v-model="form.businessRange" placeholder="请输入营业范围" input-align="right"></u-input></u-form-item>
+			<u-form-item label="商铺营业时间"><u-input v-model="form.businessHour" placeholder="请输入商铺营业时间" input-align="right"></u-input></u-form-item>
+			<u-form-item label="商铺描述" label-position="top"><u-input type="textarea" v-model="form.shopDetail" placeholder="请输入商铺描述" border></u-input></u-form-item>
 		</u-form>
-		<view class="save-btn">
-			<u-button type="primary" @click="saveShopDetail()">提交商铺信息</u-button>
-		</view>
+		<view class="save-btn"><u-button type="primary" @click="saveShopDetail()">提交商铺信息</u-button></view>
 
 		<u-top-tips ref="uTips" />
 	</view>
 </template>
 
 <script>
-	import {BASE_URL} from '@/Api/BASE_API.js'
+import { BASE_URL } from '@/Api/BASE_API.js';
 export default {
 	data() {
 		return {
@@ -50,26 +47,26 @@ export default {
 	methods: {
 		getShopDetail() {
 			this.$u.api.getShop().then(res => {
-				const {data, code} = res.data
+				const { data, code } = res.data;
 				Object.keys(this.form).map(v => {
-					this.form[v] = data[v]
-				})
-				if(data.shopId){
-					this.form.shopId = data.shopId || null
+					this.form[v] = data[v];
+				});
+				if (data.shopId) {
+					this.form.shopId = data.shopId || null;
 				}
-				
-				this.fileList = data.shopLogo && [{url: `${BASE_URL}/files/${data.shopLogo}`}]
+
+				this.fileList = data.shopLogo && [{ url: `${BASE_URL}/files/${data.shopLogo}` }];
 			});
 		},
 		saveShopDetail() {
-			const vm = this
-			this.$u.api[this.form.shopId ? 'updateShop':'saveShop'](this.form).then(res => {
+			const vm = this;
+			this.$u.api[this.form.shopId ? 'updateShop' : 'saveShop'](this.form).then(res => {
 				if (res.data.code === '200') {
 					this.$refs.uTips.show({
 						title: '保存成功',
 						type: 'primary'
 					});
-					this.getShopDetail()
+					this.getShopDetail();
 					setTimeout(() => {
 						this.$u.route({
 							type: 'navigateBack',
@@ -80,7 +77,7 @@ export default {
 			});
 		},
 		uploadImage() {
-			const vm = this
+			const vm = this;
 			uni.chooseImage({
 				count: 1,
 				success(res) {
@@ -145,7 +142,13 @@ export default {
 <style lang="scss">
 .shop-detail {
 	padding: 40rpx;
-	.save-btn{
+	.logo-box{
+		width: 162rpx;
+		border: 1px solid #eee;
+		border-radius: 10rpx;
+		overflow: hidden;
+	}
+	.save-btn {
 		margin-top: 40rpx;
 	}
 }

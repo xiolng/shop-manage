@@ -10,13 +10,13 @@
 						@clear="(page.pageNum = 1), getGoodsList(true)"
 						@search="(page.pageNum = 1), getGoodsList(true)"
 						@custom="(page.pageNum = 1), getGoodsList(true)"
+						:action-style="{ width: '100rpx', background: $u.color.primary, color: '#fff', borderRadius: '30rpx', padding: '10rpx 20rpx', overflow: 'hidden', flexShrink: 0 }"
 					></u-search>
 				</view>
-				<view class="add-box"><u-button type="primary" @click="addCommodity">新增商品</u-button></view>
 			</view>
 		</u-sticky>
 		<!-- 商品列表 -->
-		<scroll-view scroll-y style="height: 80vh;width: 100%;" @scrolltolower="onreachBottom">
+		<scroll-view scroll-y style="height: 90vh;width: 100%;" @scrolltolower="onreachBottom">
 			<view class="goods-box">
 				<view class="goods-list">
 					<view class="goods-item" v-for="(item, index) in list" :key="item.productId">
@@ -29,36 +29,40 @@
 								lazy-load
 							></u-image>
 						</view>
-						<view class="goods-title">
-							<view class="u-line-2">{{ item.productName }}</view>
-							<view class="goods-stock">库存：{{ item.stock }}</view>
-						</view>
-						<view v-if="!item.openBtn" class="more-btn" @click="changeBtn(item, index)">操作</view>
-						<view class="goods-btn" :class="item.openBtn ? '' : 'btn-close'">
-							<u-button size="mini" :type="item.isPut ? 'success' : 'info'" @click="Putaway(item, index)">{{ item.isPut ? '已上架' : '已下架' }}</u-button>
-							<u-button
-								size="mini"
-								type="primary"
-								@click="
-									$u.route({
-										url: '/pages/CommodityManagement/CreateGoods',
-										params: {
-											id: item.productId,
-											type: item.productType
-										}
-									})
-								"
-							>
-								编辑
-							</u-button>
-							<u-button size="mini" type="error" @click="deleteGoods(item.productId, index)">删除</u-button>
-							<u-button size="mini" type="warning" @click="getShare(item)">分享</u-button>
-						</view>
+						<div class="goods-right">
+							<view class="goods-title">
+								<view class="u-line-1">{{ item.productName }}</view>
+								<view class="goods-stock">库存：{{ item.stock }}</view>
+							</view>
+							<view v-if="item.openBtn" class="more-btn" @click="changeBtn(item, index)">操作</view>
+							<view class="goods-btn" :class="!item.openBtn ? '' : 'btn-close'">
+								<u-button size="mini" shape="circle" :type="item.isPut ? 'success' : 'info'" @click="Putaway(item, index)">{{ item.isPut ? '已上架' : '已下架' }}</u-button>
+								<u-button
+									size="mini"
+									type="primary"
+									shape="circle"
+									@click="
+										$u.route({
+											url: '/pages/CommodityManagement/CreateGoods',
+											params: {
+												id: item.productId,
+												type: item.productType
+											}
+										})
+									"
+								>
+									编辑
+								</u-button>
+								<u-button size="mini" shape="circle" type="error" @click="deleteGoods(item.productId, index)">删除</u-button>
+								<u-button size="mini" shape="circle" type="warning" @click="getShare(item)">分享</u-button>
+							</view>
+						</div>
 					</view>
 				</view>
 				<u-loadmore status="nomore" />
 			</view>
 		</scroll-view>
+		<view class="add-box"><u-button type="primary" shape="circle" @click="addCommodity">新增商品</u-button></view>
 		<u-popup v-model="showShare" mode="bottom">
 			<view class="share-box">
 				<u-button type="default" open-type="share">
@@ -246,14 +250,19 @@ export default {
 
 <style lang="scss">
 .commodity-management {
+	height: 100vh;
+	background: #f3f4f6;
+	.add-box {
+		position: absolute;
+		left: 40rpx;
+		right: 40rpx;
+		bottom: 200rpx;
+	}
 	// 顶部浮动
 	.position-box {
 		padding: 20rpx;
 		background-color: #fff;
 		.search-box {
-			margin-bottom: 20rpx;
-		}
-		.add-box {
 			margin-bottom: 20rpx;
 		}
 	}
@@ -263,43 +272,56 @@ export default {
 		.goods-list {
 			.goods-item {
 				display: flex;
-				padding-bottom: 10rpx;
-				border-bottom: 1px solid $uni-bg-color-grey;
+				background: #fff;
+				padding: 20rpx;
 				margin-bottom: 20rpx;
 				.goods-img {
 					width: 140rpx;
 					flex-shrink: 0;
 				}
-				.goods-title {
+				.goods-right {
+					flex-grow: 1;
 					display: flex;
 					flex-direction: column;
 					justify-content: space-between;
-					flex-grow: 1;
-					margin: 0 10rpx;
-					line-height: 30rpx;
-					.goods-stock {
-						margin-top: 6rpx;
+					.goods-title {
+						width: 100%;
+						display: flex;
+						justify-content: space-between;
+						flex-grow: 1;
+						margin: 0 10rpx;
+						line-height: 30rpx;
+						.u-line-1{
+							max-width: 250rpx;
+							flex-grow: 1;
+						}
+						.goods-stock {
+							max-width: 200rpx;
+							margin-top: 6rpx;
+							flex-shrink: 0;
+						}
 					}
-				}
-				.more-btn {
-					display: flex;
-					flex-shrink: 0;
-					align-self: center;
-				}
-				.goods-btn {
-					width: calc(100vw - 350rpx);
-					transition: width 0.24s;
-					flex-shrink: 0;
-					display: flex;
-					justify-content: flex-end;
-					align-items: center;
-					overflow: hidden;
-					&.btn-close {
+					.more-btn {
+						display: flex;
+						flex-shrink: 0;
+						align-self: center;
+					}
+					.goods-btn {
+						width: calc(100vw - 350rpx);
 						transition: width 0.24s;
-						width: 0;
-					}
-					.u-btn {
-						margin: 0 5rpx;
+						flex-shrink: 0;
+						display: flex;
+						justify-content: flex-end;
+						align-items: center;
+						overflow: hidden;
+						&.btn-close {
+							transition: width 0.24s;
+							width: 0;
+						}
+						.u-btn {
+							height: 40rpx;
+							margin: 0 5rpx;
+						}
 					}
 				}
 			}

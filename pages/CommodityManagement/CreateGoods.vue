@@ -1,7 +1,7 @@
 <template>
 	<view class="create-goods">
 		<view class="form-box">
-			<u-form :model="form" ref="uForm" label-width="180">
+			<u-form :model="form" ref="uForm" label-width="180" label-position="top">
 				<u-form-item :label="`${goodsType == '1' ? '券码' : '商品'}名称`" prop="productName" required>
 					<u-input v-model="form.productName" placeholder="请输入名称"></u-input>
 				</u-form-item>
@@ -19,15 +19,20 @@
 						@confirm="getCategory"
 					></u-select>
 				</u-form-item>
-				<u-form-item label="是否上架" prop="isPut"><u-switch v-model="form.isPut"></u-switch></u-form-item>
+				<u-form-item label="是否上架" prop="isPut">
+					<view style="display: flex; justify-content: space-between;">
+						<text>{{form.isPut ? '是':'否'}}</text>
+						<u-switch v-model="form.isPut"></u-switch>
+					</view>
+				</u-form-item>
 				<u-form-item :label="`${goodsType == '1' ? '券码' : '商品'}价格`" prop="productPrice" required>
-					<u-number-box v-model="form.productPrice" placeholder="请输入价格" :positive-integer="false" :min="0.01"></u-number-box>
+					<u-number-box v-model="form.productPrice" placeholder="请输入价格" :positive-integer="false" :min="0.01" input-width='120'></u-number-box>
 				</u-form-item>
 				<u-form-item :label="`${goodsType == '1' ? '券码' : '商品'}原价`" prop="originalPrice" required>
-					<u-number-box v-model="form.originalPrice" placeholder="请输入原价" :positive-integer="false" :min="0.01"></u-number-box>
+					<u-number-box v-model="form.originalPrice" placeholder="请输入原价" :positive-integer="false" :min="0.01" input-width='120'></u-number-box>
 				</u-form-item>
 				<u-form-item :label="`${goodsType == '1' ? '券码' : '商品'}库存`" prop="stock" required>
-					<u-number-box v-model="form.stock" :positive-integer="false" placeholder="请输入库存"></u-number-box>
+					<u-number-box v-model="form.stock" :positive-integer="false" placeholder="请输入库存" input-width='120'></u-number-box>
 				</u-form-item>
 				<u-form-item :label="`${goodsType == '1' ? '券码' : '商品'}简介`" prop="productIntro">
 					<u-input v-model="form.productIntro" type="textarea" placeholder="请输入简介" border></u-input>

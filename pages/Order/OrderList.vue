@@ -3,21 +3,20 @@
 		<view class="order-item" v-for="item in orderList" :key="item.orderId" @click="getOrder(item)">
 			<view class="order-content">
 				<view class="content-txt">订单编号：{{ item.orderNo }}</view>
-				<view class="content-txt">订单状态：{{ orderStatus[item.orderStatus] }}</view>
-				<view class="content-txt">支付状态：{{ payStatus[item.payStatus] }}</view>
-				<view class="content-txt">订单日期：{{ item.createTime }}</view>
+				<view class="price-status" :style="{color: (item.orderStatus <8 || item.orderStatus >= 9) && item.payStatus == 4 ? themeColor.primary: themeColor.error}">{{ (item.orderStatus < 8 || item.orderStatus >= 9) ? payStatus[item.payStatus]: '已取消' }}</view>
 			</view>
 			<view class="goods-list">
 				<view class="goods-item" v-for="(goods, index) in item.orderDetailListOutDTOList" :key="index">
-					<view class="order-img"><u-image :src="BASE_URL + '/files/' + goods.productCover" width="100%" height="100rpx"></u-image></view>
+					<view class="order-img"><u-image :src="BASE_URL + '/files/' + goods.productCover" width="100%" height="140rpx"></u-image></view>
 					<view class="order-detail">
-						<view class="detail-txt">商品名称：{{ goods.productName }}</view>
-						<view class="detail-txt">商品数量：{{ goods.productNumber }}</view>
-						<view class="detail-txt">单价：{{ goods.productPrice }}</view>
+						<view class="detail-txt u-line-1" style="font-size: 30rpx;">{{ goods.productName }}</view>
+						<view class="detail-txt u-line-1" style="color: #999; font-size: 24rpx;">订单状态：{{ orderStatus[item.orderStatus] }}</view>
+				<view class="content-txt u-line-1" style="color: #999; font-size: 24rpx;">订单日期：{{ item.createTime }}</view>
+						<view class="detail-txt" style="display: flex; justify-content: space-between;"><text :style="{color: themeColor.error}">￥{{ goods.productPrice }}</text><text>x{{ goods.productNumber }}</text></view>
 					</view>
 				</view>
 			</view>
-			<view class="all-price">共{{ item.orderDetailListOutDTOList.length }}件，总价格：{{ addPrice(item) }}元</view>
+			<view class="all-price">共{{ item.orderDetailListOutDTOList.length }}件，总价格：{{ item.orderPrice }}元</view>
 			<view class="order-addrenss">
 				<u-icon name="map"></u-icon>
 				<view class="address-txt">{{ item.buyerAddress }}</view>
@@ -58,11 +57,13 @@ export default {
 			gategorys: ['送货', '送外卖', '送餐', '发货'],
 			gategoryNum: 0,
 			logisticsData: {},
-			activeItem: {}
+			activeItem: {},
+			themeColor: this.$u.color
 		};
 	},
 	mounted() {
 		this.gategoryNum = uni.getStorageSync('shopGategory');
+		console.log(this.$u.color)
 	},
 	methods: {
 		getOrder(item){
@@ -136,12 +137,12 @@ export default {
 		margin: 20rpx;
 		padding: 20rpx;
 		.order-content {
+			display: flex;
+			justify-content: space-between;
 			margin-bottom: 20rpx;
 			padding-bottom: 20rpx;
 			border-bottom: 1px solid #eee;
 			.content-txt {
-				font-size: 24rpx;
-				margin-bottom: 10rpx;
 			}
 		}
 		.goods-list {
@@ -151,13 +152,19 @@ export default {
 				align-items: center;
 				margin-bottom: 20rpx;
 				.order-img {
-					width: 100rpx;
+					width: 140rpx;
 					flex-shrink: 0;
 					align-items: center;
 					margin-right: 20rpx;
+					border: 1px solid #eee;
+					border-radius: 10rpx;
 				}
 				.order-detail {
+					min-height: 140rpx;
+					display: flex;
 					flex-grow: 1;
+					flex-direction: column;
+					justify-content: space-between;
 					margin-right: 10rpx;
 					.detail-txt {
 						font-size: 24rpx;

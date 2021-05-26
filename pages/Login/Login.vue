@@ -1,15 +1,17 @@
 <template>
 	<view class="login-box">
-		<view class="login-title">欢迎登录商家管理系统</view>
-		<u-form :model="form" ref="uForm" label-width="100" label-position="top">
-			<u-form-item label="租户编码" prop="tenantCode" left-icon="phone"><u-input v-model="form.tenantCode" placeholder="请输入租户编码" /></u-form-item>
-			<u-form-item label="手机号" prop="phone" left-icon="phone"><u-input v-model="form.phone" placeholder="请输入手机号" /></u-form-item>
-			<u-form-item label="验证码" prop="validateCode" left-icon="email">
+		<view class="login-title">您好 <br /> 欢迎登录商家管理系统！</view>
+		<u-form :model="form" ref="uForm" label-width="100" label-position="top" :label-style="{color: $u.color.primary}">
+			<u-form-item label="租户编码" prop="tenantCode" :left-icon="codeImg" :left-icon-style="{color: $u.color.primary}"><u-input v-model="form.tenantCode" placeholder="请输入租户编码" /></u-form-item>
+			<u-form-item label="手机号" prop="phone" :left-icon="phoneImg" :left-icon-style="{color: $u.color.primary}"><u-input v-model="form.phone" placeholder="请输入手机号" /></u-form-item>
+			<u-form-item label="验证码" prop="validateCode" :left-icon="validImg" :left-icon-style="{color: $u.color.primary}">
 				<u-input :border="border" placeholder="请输入验证码" v-model="form.validateCode" type="text"></u-input>
-				<u-button slot="right" type="error" size="mini" @click="getCode">{{ codeTips }}</u-button>
+				<u-button slot="right" type="primary" shape="circle" size="mini" @click="getCode">{{ codeTips }}</u-button>
 			</u-form-item>
 		</u-form>
-		<u-button type="primary" :disabled="!form.phone" @click="submit">登录</u-button>
+		<view class="btn-box" style="margin-top: 100rpx;">
+			<u-button type="primary" shape="circle" :disabled="!form.phone" @click="submit">登录</u-button>
+		</view>
 		<!-- <view class="change-login">
 			<text @click="ispwd = !ispwd">{{ ispwd ? '验证码登录' : '密码登录' }}</text>
 		</view> -->
@@ -19,9 +21,15 @@
 </template>
 
 <script>
+	import codeImg from './image/code.logo.svg'
+	import phoneImg from './image/phone.logo.svg'
+	import validImg from './image/valid.logo.svg'
 export default {
 	data() {
 		return {
+			codeImg,
+			phoneImg,
+			validImg,
 			ispwd: true,
 			form: {
 				tenantCode: '',
@@ -160,10 +168,16 @@ export default {
 
 <style lang="scss">
 .login-box {
+	min-height: 100vh;
+	background: linear-gradient(to bottom left, rgba(#b7e0ff, .3), #fff);
 	padding: 40rpx;
 	.login-title {
 		font-size: 40rpx;
 		margin-bottom: 30rpx;
+	}
+	.u-icon__img{
+		width: 30rpx !important;
+		height: 30rpx !important;
 	}
 	.change-login {
 		padding: 20rpx 0;
