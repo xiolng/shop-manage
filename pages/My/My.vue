@@ -4,12 +4,12 @@
 			<view class="abs-box">
 				<view class="static-box">
 					<view class="u-m-r-10 abs-item">
-						<u-avatar v-if="memberDetail.avatarUrl" :src="memberDetail.avatarUrl.includes('https') ? memberDetail.avatarUrl : `${BASE_URL}/files/${memberDetail.avatarUrl}`" size="140"></u-avatar>
-						<u-avatar v-else :src="`${memberDetail.avatarUrl}`" size="140"></u-avatar>
+						<u-avatar v-if="shopDetail.shopLogo" :src="shopDetail.shopLogo.includes('https') ? shopDetail.shopLogo : `${BASE_URL}/files/${shopDetail.shopLogo}`" size="140"></u-avatar>
+						<u-avatar v-else :src="`${shopDetail.shopLogo}`" size="140"></u-avatar>
 					</view>
 					<view class="u-flex-1 abs-item">
-						<view class="u-font-18 u-p-b-20">{{ memberDetail.nickName }}</view>
-						<view class="u-font-14 u-tips-color">{{ memberDetail.phone }}</view>
+						<view class="u-font-18 u-p-b-20">{{ shopDetail.shopName }}</view>
+						<view class="u-font-14">{{ shopDetail.shopTel }}</view>
 					</view>
 					<!-- <view class="u-m-l-10 u-p-10"><u-icon name="scan" color="#969799" size="28"></u-icon></view> -->
 					<!-- <view class="u-m-l-10 u-p-10"><u-icon name="arrow-right" color="#969799" size="28"></u-icon></view> -->
@@ -22,36 +22,15 @@
 			<u-grid :col="4">
 				<u-grid-item
 					@click="
-						isLogin() &&
-							$u.route({
-								url: `/pages/StockOrder/StockOrder`
-							})
-					"
-				>
-					<u-image :src="msgImg" width="60" height="60"></u-image>
-					<view class="grid-text">券码</view>
-				</u-grid-item>
-				<u-grid-item
-					@click="
 						$u.route({
-								url: `/pages/My/MemberDetail`
+								url: `/pages/My/ShopDetail`
 						})
 					"
 				>
 					<u-image :src="msgImg" width="60" height="60"></u-image>
 					<view class="grid-text">信息编辑</view>
 				</u-grid-item>
-				<u-grid-item
-					@click="
-						$u.route({
-								url: `/pages/My/Address`
-						})
-					"
-				>
-					<u-image :src="msgImg" width="60" height="60"></u-image>
-					<view class="grid-text">收货地址</view>
-				</u-grid-item>
-				<u-grid-item @click="isLogin() && $u.route(`/pages/My/Feedback`)">
+				<u-grid-item @click="$u.route(`/pages/My/Feedback`)">
 					<u-image :src="favImg" width="60" height="60"></u-image>
 					<view class="grid-text">问题反馈</view>
 				</u-grid-item>

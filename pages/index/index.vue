@@ -10,7 +10,7 @@
 				<image class="item-icon" src="../../static/shop/commodityManagement.svg"></image>
 				<text class="item-name">商品管理</text>
 			</view>
-			<view class="tag-item" @click="scanChange">
+			<view class="tag-item" @click="scanChange" v-if="shopType && shopType == '2'">
 				<image class="item-icon" src="../../static/shop/writeOff.svg"></image>
 				<text class="item-name">核销券码--上线按类型隐藏</text>
 			</view>
@@ -83,7 +83,8 @@ export default {
 				]
 			},
 			startTime: this.$u.timeFormat(new Date(new Date() - 7 * 24 * 3600 * 1000).valueOf(), 'yyyy-mm-dd'),
-			endTime: this.$u.timeFormat(new Date().valueOf(), 'yyyy-mm-dd')
+			endTime: this.$u.timeFormat(new Date().valueOf(), 'yyyy-mm-dd'),
+			shopType: null
 		};
 	},
 	onShareAppMessage() {
@@ -93,6 +94,7 @@ export default {
 	},
 	onLoad() {
 		console.log('color', this.$u.color);
+		this.shopType = uni.getStorageSync('shopGategory') || ''
 		this.tipColor = [this.$u.color.primary, this.$u.color.error, this.$u.color.warning];
 		this.getShopDetail();
 		this.show = true;
