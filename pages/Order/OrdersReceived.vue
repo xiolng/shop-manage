@@ -28,7 +28,7 @@
 		<!-- 图表-日期选择-结束 -->
 		<view class="qiun-columns">
 			<view class="qiun-charts">
-				<uCharts
+				<qiun-data-charts
 					v-if="chartData.series.length"
 					type="pie"
 					canvasId="receivedCanvas"
@@ -46,11 +46,7 @@
 </template>
 
 <script>
-import uCharts from '../../components/u-charts/u-charts.vue';
 export default {
-	components: {
-		uCharts
-	},
 	data() {
 		return {
 			searchData: {

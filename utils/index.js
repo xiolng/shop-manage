@@ -9,11 +9,10 @@ export const isLogin = () => {
 }
 
 export const goLogin = () => {
-	// #ifdef H5
 	uni.navigateTo({
 		url: '/pages/Login/Login'
 	})
-	// #endif
+	return false
 	uni.login({
 		success(result) {
 			console.log('result', result)

@@ -32,7 +32,7 @@
 
 		<view class="qiun-columns">
 			<view class="qiun-charts">
-				<uCharts
+				<qiun-data-charts
 					v-if="chartData.categories.length"
 					type="column"
 					canvasId="renshu2"
@@ -57,11 +57,7 @@
 </template>
 
 <script>
-import uCharts from '@/components/u-charts/u-charts.vue';
 export default {
-	components: {
-		uCharts
-	},
 	data() {
 		return {
 			showTips: false,
@@ -111,7 +107,7 @@ export default {
 		//#endif
 		this.cWidth = uni.upx2px(750);
 		this.cHeight = uni.upx2px(500);
-		this.getServerData();
+		// this.getServerData();
 	},
 	methods: {
 		scanChange() {
@@ -162,6 +158,7 @@ export default {
 				console.log(res);
 				uni.setStorageSync(`shopDetail`, res.data.data);
 				uni.setStorageSync('shopGategory', res.data.data.shopGategory);
+				this.getServerData()
 			});
 		},
 		routeComodity() {
